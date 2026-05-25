@@ -1,0 +1,71 @@
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--carbon);
+}
+
+.login-card {
+  background: var(--carbon2);
+  border: 1px solid rgba(79,255,170,0.15);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.login-logo {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--verde-neon);
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.login-logo span { color: var(--blanco); }
+
+.login-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--carbon3);
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.login-tabs button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--gris);
+  padding: 10px;
+  border-radius: 8px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.login-tabs button.active {
+  background: var(--verde);
+  color: #fff;
+}
+
+.login-error {
+  background: rgba(224,92,42,0.1);
+  border: 1px solid rgba(224,92,42,0.3);
+  color: #e05c2a;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-bottom: 16px;
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 8px;
+}

@@ -1,0 +1,42 @@
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">Eco<span>motor</span></div>
+
+    <div class="login-tabs">
+      <button [class.active]="modo === 'login'" (click)="modo = 'login'">Iniciar sesión</button>
+      <button [class.active]="modo === 'registro'" (click)="modo = 'registro'">Registrarse</button>
+    </div>
+
+    <div *ngIf="error" class="login-error">{{ error }}</div>
+
+    <!-- LOGIN -->
+    <div *ngIf="modo === 'login'">
+      <div class="form-row">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="loginData.email" placeholder="juan@email.com">
+      </div>
+      <div class="form-row">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="loginData.password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" (click)="iniciarSesion()">Entrar →</button>
+    </div>
+
+    <!-- REGISTRO -->
+    <div *ngIf="modo === 'registro'">
+      <div class="form-row">
+        <label>Nombre</label>
+        <input type="text" [(ngModel)]="registroData.nombre" placeholder="Juan Pérez">
+      </div>
+      <div class="form-row">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="registroData.email" placeholder="juan@email.com">
+      </div>
+      <div class="form-row">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="registroData.password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" (click)="registrarse()">Crear cuenta →</button>
+    </div>
+  </div>
+</div>

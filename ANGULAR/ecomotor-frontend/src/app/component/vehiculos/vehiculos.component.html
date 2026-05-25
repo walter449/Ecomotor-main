@@ -1,0 +1,9 @@
+<div>
+  <h2>Vehículos registrados</h2>
+  <p *ngIf="vehiculos.length === 0">No hay vehículos registrados aún.</p>
+  <ul>
+    <li *ngFor="let v of vehiculos">
+      {{ v.placa }} — {{ v.marca }} {{ v.modelo }} ({{ v.anio }})
+    </li>
+  </ul>
+</div>
