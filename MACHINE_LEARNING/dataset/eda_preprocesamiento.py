@@ -38,7 +38,8 @@ plt.style.use('ggplot')
 
 # Lee el CSV original
 co2 = pd.read_csv(
-    'MACHINE_LEARNING/dataset/mi2015-2024-consumo-combustible.csv'
+    'MACHINE_LEARNING/dataset/mi2015-2024-consumo-combustible.csv',
+    sep=';'
 )
 
 # Crear copia para trabajar seguro
@@ -136,7 +137,7 @@ df = df.rename(columns={
 
     'Combined (mpg)': 'consumo_mpg',
 
-    'CO2 emissions(g/km)': 'co2_base'
+    'CO2 emissions (g/km)': 'co2_base'
 
 })
 
@@ -235,3 +236,147 @@ for columna in variables_categoricas:
         # Mostrar gráfico
         plt.show()
 
+# =========================================================
+# TOP 20 MODELOS
+# =========================================================
+
+counts = df.modelo.value_counts().head(20)
+
+plt.figure(figsize=(10,6))
+
+ax = counts.plot(kind="bar")
+
+ax.set_title('Top 20 Modelos', fontsize=18)
+ax.set_xlabel('Modelo', fontsize=14)
+ax.set_ylabel('Número de carros', fontsize=14)
+
+plt.xticks(rotation=45)
+
+ax.bar_label(ax.containers[0], fontsize=10)
+
+plt.tight_layout()
+plt.show()
+
+# =========================================================
+# 8. Variable de respuesta frente VS características categóricas
+# =========================================================
+
+
+for columna in variables_categoricas:
+
+        plt.figure(figsize=(15, 5))
+
+        # Agrupar y sacar promedio de CO2
+        datos_agrupados = (
+
+            df.groupby(columna)['co2_base']
+            .mean()
+            .round(1)
+            .reset_index()
+
+        )
+
+        # Ordenar de mayor a menor
+        datos_ordenados = datos_agrupados.sort_values(
+            by='co2_base',
+            ascending=False
+        )
+
+        # Crear gráfico
+        ax = sns.barplot(
+            x=columna,
+            y='co2_base',
+            data=datos_ordenados,
+            order=datos_ordenados[columna]
+        )
+
+        # Mostrar valores encima de barras
+        ax.bar_label(
+            ax.containers[0],
+            rotation=90
+        )
+
+        # Títulos
+        plt.xlabel(columna, fontsize=18)
+
+        plt.ylabel(
+            'Promedio de Emisiones CO2',
+            fontsize=15
+        )
+
+        plt.title(
+            f'Promedio de CO2 por {columna}',
+            fontsize=20
+        )
+
+        # Rotar nombres
+        plt.xticks(
+            rotation=45,
+            ha='right',
+            fontsize=12
+        )
+
+        plt.show()
+
+# =========================================================
+# 9. DISTRIBUCIÓN DE VARIABLES NUMÉRICAS
+# =========================================================
+
+variables_numericas = [
+
+    'anio_modelo',
+
+    'cilindraje_motor',
+
+    'cilindros',
+
+    'consumo_ciudad',
+
+    'consumo_carretera',
+
+    'consumo_combinado',
+
+    'consumo_mpg',
+
+    'co2_base'
+
+]
+
+# Tamaño general de la figura
+plt.figure(figsize=(15,10))
+
+cantidad_variables = len(variables_numericas)
+
+for i, columna in enumerate(variables_numericas, 1):
+
+    # Crear subplot
+    plt.subplot((cantidad_variables // 2) + 1, 2, i)
+
+    # Histograma
+    ax = sns.histplot(
+        data=df,
+        x=columna,
+        kde=True
+    )
+
+    # Título
+    ax.set_title(
+        f'Distribución de {columna}',
+        fontsize=12
+    )
+
+    # Cambiar nombres ejes
+    ax.set_xlabel(columna)
+    ax.set_ylabel('Cantidad')
+
+    # Rotar etiquetas
+    plt.xticks(
+        rotation=45,
+        fontsize=10
+    )
+
+# Ajustar espacios
+plt.tight_layout()
+
+# Mostrar
+plt.show()
