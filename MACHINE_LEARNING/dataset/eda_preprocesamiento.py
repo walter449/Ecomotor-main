@@ -380,3 +380,92 @@ plt.tight_layout()
 
 # Mostrar
 plt.show()
+
+# =========================================================
+# 10. TARGET VARIABLE VS NUMERICAL FEATURES
+# =========================================================
+
+
+
+# =========================================================
+# 11. PROMEDIO DE CO2 POR AÑO
+# =========================================================
+
+plt.figure(figsize=(10,5))
+
+df.groupby('anio_modelo')['co2_base'].mean().plot()
+
+plt.title('Promedio de CO2 por Año')
+
+plt.ylabel('CO2 promedio')
+
+plt.show()
+
+
+# =========================================================
+# 14. LABEL ENCODING
+# =========================================================
+# =========================================================
+# LABEL ENCODING
+# =========================================================
+# Convertir variables categóricas a números
+# para que puedan ser usadas en Machine Learning
+#
+# Ejemplo:
+# Toyota -> 0
+# Kia -> 1
+# Ford -> 2
+# =========================================================
+
+
+# Crear copia para no modificar el dataset original
+df_codificado = df.copy()
+
+# Variables categóricas
+columnas_categoricas = [
+
+    'marca',
+
+    'modelo',
+
+    'clase_vehiculo',
+
+    'transmision',
+
+    'tipo_combustible'
+
+]
+
+# Diccionario para guardar encoders
+codificadores = {}
+
+# Aplicar Label Encoding
+for columna in columnas_categoricas:
+
+    # Crear encoder
+    le = LabelEncoder()
+
+    # Transformar texto a números
+    df_codificado[columna] = le.fit_transform(
+        df_codificado[columna]
+    )
+
+    # Guardar encoder
+    codificadores[columna] = le
+
+# Mostrar resultado
+print(df_codificado.head())
+
+# =========================================================
+# 16. DATASET FINAL LIMPIO
+# =========================================================
+
+print("\n==============================")
+print("DATASET FINAL")
+print("==============================")
+
+print(df.head())
+
+print(df.shape)
+
+
