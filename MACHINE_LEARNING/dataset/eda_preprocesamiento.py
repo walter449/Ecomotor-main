@@ -180,3 +180,58 @@ df['transmision'] = df['transmision'].str.strip()
 
 df['tipo_combustible'] = df['tipo_combustible'].str.strip()
 
+# =========================================================
+# 7. DISTRIBUCIÓN DE VARIABLES CATEGÓRICAS
+# =========================================================
+
+variables_categoricas = [
+
+    'marca',
+
+    'clase_vehiculo',
+
+    'transmision',
+
+    'tipo_combustible'
+
+]
+
+for columna in variables_categoricas:
+
+        # Tamaño del gráfico
+        plt.figure(figsize=(15, 5))
+
+        # Crear gráfico de barras
+        ax = sns.countplot(
+            x=columna,
+            data=df,
+            order=df[columna].value_counts().index
+
+        )
+
+        # Mostrar cantidades encima de las barras
+        ax.bar_label(
+            ax.containers[0],
+            rotation=45
+        )
+
+        # Etiquetas
+        plt.xlabel(columna, fontsize=15)
+        plt.ylabel('Cantidad', fontsize=15)
+
+        # Título
+        plt.title(
+            f'Gráfico de barras de {columna}',
+            fontsize=20
+        )
+
+        # Rotar texto inferior
+        plt.xticks(
+            rotation=45,
+            ha='right',
+            fontsize=12
+        )
+
+        # Mostrar gráfico
+        plt.show()
+
