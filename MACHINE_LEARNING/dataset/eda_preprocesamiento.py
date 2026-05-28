@@ -453,8 +453,30 @@ for columna in columnas_categoricas:
     # Guardar encoder
     codificadores[columna] = le
 
-# Mostrar resultado
-print(df_codificado.head())
+ 
+#=========================================================
+# MOSTRAR TABLAS DE LABEL ENCODING
+# =========================================================
+
+print("\n==============================")
+print("TABLAS DE LABEL ENCODING")
+print("==============================")
+
+for columna, encoder in codificadores.items():
+
+    print(f"\nColumna: {columna}")
+    print("-------------------------")
+
+    # Crear tabla de equivalencias
+    tabla = pd.DataFrame({
+
+        'Valor Original': encoder.classes_,
+
+        'Valor Codificado': range(len(encoder.classes_))
+
+    })
+
+    print(tabla)
 
 # =========================================================
 # 16. DATASET FINAL LIMPIO
@@ -468,4 +490,25 @@ print(df.head())
 
 print(df.shape)
 
+# =========================================================
+# 17. GUARDAR DATASET LIMPIO
+# =========================================================
+# IMPORTANTE:
+# Esto NO modifica el CSV original.
+# Crea un nuevo archivo limpio listo para ML.
+# =========================================================
 
+df.to_csv(
+
+    'MACHINE_LEARNING/dataset/co2_limpio.csv',
+
+    index=False
+
+)
+
+print("\n==============================")
+print("CSV LIMPIO GUARDADO")
+print("==============================")
+
+print("Archivo creado:")
+print("MACHINE_LEARNING/dataset/co2_limpio.csv")
