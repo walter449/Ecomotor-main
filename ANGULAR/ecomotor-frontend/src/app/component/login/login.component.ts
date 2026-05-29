@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UsuariosService } from '../../services/usuarios.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { UsuariosService } from '../../services/usuarios.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   modo: 'login' | 'registro' = 'login';
 
@@ -20,7 +20,17 @@ export class LoginComponent {
 
   error = '';
 
-  constructor(private usuariosService: UsuariosService, private router: Router) {}
+  constructor(
+    private usuariosService: UsuariosService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      this.modo = params.get('modo') === 'registro' ? 'registro' : 'login';
+    });
+  }
 
   iniciarSesion(): void {
     this.usuariosService.login(this.loginData.email, this.loginData.password).subscribe({

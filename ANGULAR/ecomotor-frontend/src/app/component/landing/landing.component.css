@@ -53,21 +53,6 @@
     display: flex; gap: 16px; margin-top: 36px; flex-wrap: wrap;
     animation: fadeUp .7s .3s ease both;
   }
-  .btn-primary {
-    background: var(--verde-neon); color: var(--carbon);
-    border: none; padding: 14px 32px; border-radius: 50px;
-    font-family: var(--font-head); font-weight: 700; font-size: 0.95rem;
-    cursor: pointer; transition: all .2s;
-    box-shadow: 0 0 30px rgba(79,255,170,0.3);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(79,255,170,0.5); }
-  .btn-secondary {
-    background: transparent; color: var(--blanco);
-    border: 1.5px solid rgba(255,255,255,0.2); padding: 14px 32px; border-radius: 50px;
-    font-family: var(--font-head); font-weight: 600; font-size: 0.95rem;
-    cursor: pointer; transition: all .2s;
-  }
-  .btn-secondary:hover { border-color: var(--verde-neon); color: var(--verde-neon); }
 
   .hero-stats {
     display: flex; gap: 32px; margin-top: 48px;
