@@ -58,7 +58,10 @@
     display: flex; gap: 32px; margin-top: 48px;
     animation: fadeUp .7s .4s ease both;
   }
-  .stat-item { text-align: left; }
+  .stat-item {
+     text-align: left; 
+    }
+    
   .stat-num {
     font-family: var(--font-head); font-size: 1.8rem; font-weight: 800;
     color: var(--verde-neon); line-height: 1;
@@ -66,7 +69,10 @@
   .stat-label { font-size: 0.72rem; color: var(--gris); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* ─── SECTIONS ─── */
-  section { padding: 80px 60px; }
+  section { 
+    padding: 80px 60px; 
+  }
+
   .section-label {
     font-size: 0.72rem; font-weight: 600; letter-spacing: 2px;
     text-transform: uppercase; color: var(--verde-neon);

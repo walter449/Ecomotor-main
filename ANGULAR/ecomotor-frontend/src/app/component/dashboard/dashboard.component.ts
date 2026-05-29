@@ -89,12 +89,19 @@ export class DashboardComponent implements OnInit {
 
   constructor(private vehiculosService: VehiculosService, private rtmService: RtmService, private mantenimientosService: MantenimientosService, private router: Router) { }
 
-  seleccionarVehiculo(id: number): void {
-    this.vehiculo = this.vehiculos.find(v => v.id === id);
-    if (this.vehiculo) {
+  seleccionarVehiculo(id: number | null): void {
+    if (!id) {
+      this.vehiculo = null;
+      this.mantenimientos = [];
+      return;
+    }
 
+    this.vehiculo = this.vehiculos.find(v => v.id === Number(id)) || null;
+    if (this.vehiculo) {
       this.vehiculo.ecoScore =
         this.calcularEcoScore(this.vehiculo);
+
+      this.cargarMantenimientos();
 
     }
   }
@@ -107,7 +114,7 @@ export class DashboardComponent implements OnInit {
     this.vehiculosService.getVehiculosPorUsuario(usuario.id).subscribe({
       next: (data) => {
         this.vehiculos = data;
-        if (data.length > 0) this.vehiculo = data[0];
+        this.vehiculo = null;
       },
       error: (err) => console.error(err)
     });
@@ -137,15 +144,7 @@ export class DashboardComponent implements OnInit {
 
         this.vehiculos = data;
 
-        if (this.vehiculos.length > 0) {
-
-          this.vehiculo = this.vehiculos[0];
-
-          this.cargarMantenimientos();
-
-          this.vehiculo.ecoScore =
-            this.calcularEcoScore(this.vehiculo);
-        }
+        this.vehiculo = null;
 
       });
   }

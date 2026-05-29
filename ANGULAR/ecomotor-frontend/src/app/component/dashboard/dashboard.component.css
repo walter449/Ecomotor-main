@@ -1,3 +1,8 @@
+  :host {
+    display: block;
+    padding-top: 88px;
+  }
+
   /* ─── HERO VISUAL (RIGHT SIDE) ─── */
   .hero-visual {
     position: relative; display: flex; align-items: center; justify-content: center;

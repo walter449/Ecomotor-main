@@ -1,0 +1,531 @@
+ <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Eco<span>motor</span></div>
+    <div>
+      <button class="nav-btn" style="background:transparent; border:1px solid rgba(255,255,255,0.2); margin-right:8px"
+        (click)="logout()">Salir</button>
+      <button (click)="openModalMantenimiento()"
+        style=" margin-right: 7px; background:var(--verde);color:#fff;border:none;padding:9px 18px;border-radius:50px;font-size:0.8rem;cursor:pointer;font-family:var(--font-head);font-weight:700">+
+        Agregar mantenimiento</button>
+      <button class="nav-btn" (click)="openModal()">🚗 Registrar Vehículo</button>
+    </div>
+
+  </nav>
+  
+<!-- DASHBOARD INTERACTIVO -->
+  <section class="dashboard-section" id="dashboard">
+
+    <div style="max-width: 760px; margin: 0 auto 20px; background: var(--carbon2); border: 1px solid rgba(79,255,170,0.12); border-radius: 20px; padding: 18px 20px; box-shadow: 0 24px 50px rgba(0,0,0,0.25);">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:10px">
+        <div>
+          <div style="font-family:var(--font-head); font-weight:700; font-size:0.95rem; margin-bottom:4px">Selecciona un vehículo para cargar el panel</div>
+          <div style="font-size:0.8rem; color:var(--gris)">Cuando elijas uno, se mostrará su EcoScore, mantenimiento y RTM.</div>
+        </div>
+        <span class="dash-plate">{{ vehiculo ? vehiculo.placa : 'Sin vehículo' }}</span>
+      </div>
+      <select *ngIf="vehiculos.length > 0" [ngModel]="vehiculo?.id || null" (ngModelChange)="seleccionarVehiculo($event)"
+        style="background:var(--carbon3); border:1px solid rgba(255,255,255,0.1); color:var(--blanco); padding:10px 12px; border-radius:10px; font-family:var(--font-body); font-size:0.85rem; width:100%">
+        <option [ngValue]="null">Selecciona un vehículo</option>
+        <option *ngFor="let v of vehiculos" [ngValue]="v.id">{{ v.marca }} {{ v.modelo }} — {{ v.placa }}</option>
+      </select>
+      <div *ngIf="vehiculos.length === 0" style="font-size:0.82rem; color:var(--gris); margin-top:10px">Aún no tienes vehículos registrados.</div>
+    </div>
+
+    <div *ngIf="vehiculo; else emptyDashboard" class="dashboard-app">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-logo">Panel de control</div>
+
+        <div class="sidebar-item active" (click)="switchTab('resumen', $any($event.currentTarget))">
+          <span class="icon">📊</span> Resumen
+        </div>
+        <div class="sidebar-item active" (click)="switchTab('vehiculo', $any($event.currentTarget))">
+          <span class="icon">🚗</span> Mi vehiculo
+        </div>
+        <div class="sidebar-item" (click)="switchTab('rtm', $any($event.currentTarget))">
+          <span class="icon">🔍</span> Rev. Técnico-Mecánica
+        </div>
+        <div class="sidebar-item" (click)="switchTab('emisiones', $any($event.currentTarget))" id="emisionesNav">
+          <span class="icon">🌿</span> Emisiones CO₂
+        </div>
+        <div class="sidebar-item" (click)="switchTab('talleres', $any($event.currentTarget))">
+          <span class="icon">🔧</span> Talleres
+        </div>
+        <div class="sidebar-item" (click)="switchTab('historial', $any($event.currentTarget))">
+          <span class="icon">📋</span> Historial
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+
+        <!-- TAB: RESUMEN -->
+        <div class="tab-content active" id="tab-resumen">
+          <div class="overview-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">EcoScore</div>
+              <div class="kpi-val kpi-good">{{ vehiculo ? vehiculo.ecoScore : '--' }}/100</div>
+              <div class="kpi-sub kpi-good">↑ +5 este mes</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">RTM Vigente</div>
+              <div class="kpi-val kpi-good">156 días</div>
+              <div class="kpi-sub" style="color:var(--gris)">Vence: Mar 2025</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Tareas Pendientes</div>
+              <div class="kpi-val kpi-warn">3 items</div>
+              <div class="kpi-sub kpi-bad">1 urgente</div>
+            </div>
+          </div>
+          <div class="timeline-title">📅 Próximos Mantenimientos</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(224,92,42,0.15)">🛑</div>
+              <div class="tl-body">
+                <div class="tl-name">Pastillas de Freno</div>
+                <div class="tl-detail">Desgaste crítico — reemplazar inmediatamente</div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-days" style="color:var(--naranja)">VENCIDO</div>
+                <div class="tl-date">Desde 5 Sep</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(245,197,24,0.15)">🔧</div>
+              <div class="tl-body">
+                <div class="tl-name">Filtro de Aire</div>
+                <div class="tl-detail">Cada 15.000 km — actualmente en 13.500 km</div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-days" style="color:var(--amarillo)">23 días</div>
+                <div class="tl-date">5 Oct 2024</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(79,255,170,0.15)">🛢️</div>
+              <div class="tl-body">
+                <div class="tl-name">Cambio de Aceite</div>
+                <div class="tl-detail">Sintético 5W-30 — cada 5.000 km</div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-days" style="color:var(--verde-neon)">60 días</div>
+                <div class="tl-date">12 Nov 2024</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(79,170,255,0.15)">🔋</div>
+              <div class="tl-body">
+                <div class="tl-name">Revisión de Batería</div>
+                <div class="tl-detail">3 años de uso — revisar carga y terminales</div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-days" style="color:var(--verde-neon)">90 días</div>
+                <div class="tl-date">12 Dic 2024</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(155,89,182,0.15)">🔍</div>
+              <div class="tl-body">
+                <div class="tl-name">Revisión Técnico-Mecánica</div>
+                <div class="tl-detail">Obligatoria — CDA autorizado por Mintransporte</div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-days" style="color:var(--verde-neon)">156 días</div>
+                <div class="tl-date">Mar 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <div class="tab-content" id="tab-vehiculo">
+      <div class="car-dashboard">
+        <div class="dash-header">
+          <span class="dash-title">🚙 Mi Vehículo</span>
+          <span class="dash-plate">{{ vehiculo ? vehiculo.placa : 'Sin vehículo' }}</span>
+        </div>
+        <div class="eco-score-ring">
+          <div class="ring-wrap">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <circle class="ring-bg" cx="45" cy="45" r="35" />
+              <circle class="ring-fill" cx="45" cy="45" r="500" id="heroRing" />
+            </svg>
+            <div class="ring-label">
+              <div class="ring-num">{{ vehiculo ? vehiculo.ecoScore : '--' }}/100</div>
+              <div class="ring-sub">EcoScore</div>
+            </div>
+          </div>
+          <div class="eco-info">
+            <h3>{{ vehiculo ? vehiculo.marca + ' ' + vehiculo.modelo : 'Sin vehículo' }} 🚗</h3>
+            <p>{{ vehiculo ? vehiculo.anio + ' · ' + vehiculo.combustible : 'Registra tu vehículo' }}</p>
+            <span class="eco-tag">📍 {{ vehiculo ? vehiculo.kilometraje + ' km' : '--' }}</span>
+          </div>
+        </div>
+        <div class="mant-list">
+          <div class="mant-item">
+            <div class="mant-left">
+              <div class="mant-icon" style="background:rgba(79,255,170,0.1)">🛢️</div>
+              <div>
+                <div class="mant-name">Cambio de Aceite</div>
+                <div class="mant-date">Último: 15 Ago 2024</div>
+              </div>
+            </div>
+            <span class="badge-ok ok">Al día</span>
+          </div>
+          <div class="mant-item">
+            <div class="mant-left">
+              <div class="mant-icon" style="background:rgba(245,197,24,0.1)">🔧</div>
+              <div>
+                <div class="mant-name">Filtro de Aire</div>
+                <div class="mant-date">Próximo: 5 Oct 2024</div>
+              </div>
+            </div>
+            <span class="badge-ok warn">23 días</span>
+          </div>
+          <div class="mant-item">
+            <div class="mant-left">
+              <div class="mant-icon" style="background:rgba(224,92,42,0.1)">🛑</div>
+              <div>
+                <div class="mant-name">Pastillas de Freno</div>
+                <div class="mant-date">Vencido hace 5 días</div>
+              </div>
+            </div>
+            <span class="badge-ok alert">Urgente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        
+
+        <!-- TAB: RTM -->
+        <div class="tab-content" id="tab-rtm">
+          <div class="rtm-hero">
+            <div class="rtm-circle">
+              <div class="rtm-days-num">156</div>
+              <div class="rtm-days-label">días restantes</div>
+            </div>
+            <div class="rtm-info">
+              <h3>✅ Revisión Técnico-Mecánica Vigente</h3>
+              <p>Tu vehículo tiene la RTM al día. Vence en marzo de 2025.</p>
+              <button class="cta"
+                (click)="showToast('📅 Recordatorio de RTM agendado para 30 días antes del vencimiento')">📅 Programar
+                recordatorio</button>
+            </div>
+          </div>
+          <div class="timeline-title">✔️ Ítems de la Revisión (CDA)</div>
+          <div class="checklist-grid">
+            <div class="check-item checked" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box">✓</div>
+              <div class="check-label">Sistema de frenos</div>
+            </div>
+            <div class="check-item checked" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box">✓</div>
+              <div class="check-label">Emisiones de gases</div>
+            </div>
+            <div class="check-item checked" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box">✓</div>
+              <div class="check-label">Luces y señalización</div>
+            </div>
+            <div class="check-item checked" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box">✓</div>
+              <div class="check-label">Sistema de dirección</div>
+            </div>
+            <div class="check-item" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box"></div>
+              <div class="check-label">Estado de neumáticos</div>
+            </div>
+            <div class="check-item checked" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box">✓</div>
+              <div class="check-label">Suspensión y amortiguadores</div>
+            </div>
+            <div class="check-item" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box"></div>
+              <div class="check-label">Parabrisas y vidrios</div>
+            </div>
+            <div class="check-item checked" (click)="toggleCheck($any($event.currentTarget))">
+              <div class="check-box">✓</div>
+              <div class="check-label">Identificación vehicular (VIN)</div>
+            </div>
+          </div>
+          <div
+            style="margin-top:20px; background:rgba(224,92,42,0.08); border:1px solid rgba(224,92,42,0.2); border-radius:14px; padding:16px; font-size:0.82rem; line-height:1.6; color:var(--gris-claro)">
+            ⚠️ <strong style="color:#e05c2a">Sin RTM:</strong> multa de hasta $650.000 COP e inmovilización del
+            vehículo.
+          </div>
+        </div>
+
+        <!-- TAB: EMISIONES -->
+        <div class="tab-content" id="tab-emisiones">
+          <div class="emission-meter">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+              <div style="font-family:var(--font-head); font-weight:700; font-size:1rem">📊 Nivel de Emisiones Estimado
+              </div>
+              <div style="font-size:0.8rem; color:var(--verde-neon); font-weight:600">BAJO ✓</div>
+            </div>
+            <p style="font-size:0.78rem; color:var(--gris); margin-bottom:12px">Basado en el estado de mantenimiento y
+              los KM recorridos de tu vehículo.</p>
+            <div class="meter-bar-wrap">
+              <div class="meter-bar" style="width:28%"></div>
+            </div>
+            <div class="meter-labels">
+              <span>🟢 Bajo</span><span>🟡 Moderado</span><span>🔴 Alto</span>
+            </div>
+          </div>
+
+          <div class="co2-saved" style="margin-bottom:20px">
+            <div class="co2-num">-142 kg</div>
+            <div class="co2-label">CO₂ evitado este año gracias a tu mantenimiento preventivo</div>
+            <div style="font-size:0.72rem; color:var(--gris); margin-top:8px">Equivale a plantar 7 árboles 🌳</div>
+          </div>
+
+          <div style="font-family:var(--font-head); font-weight:700; font-size:1rem; margin-bottom:14px">💡 Tips para
+            Reducir Emisiones</div>
+          <div class="tips-grid">
+            <div class="tip-card">
+              <div class="tip-icon">🛢️</div>
+              <div class="tip-title">Aceite en buen estado</div>
+              <div class="tip-text">Un motor con aceite limpio puede reducir hasta un 4% las emisiones de CO₂ y mejorar
+                el rendimiento del combustible.</div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">💨</div>
+              <div class="tip-title">Filtro de aire limpio</div>
+              <div class="tip-text">Un filtro obstruido puede aumentar el consumo de combustible hasta un 10% y elevar
+                significativamente las emisiones de HC y CO.</div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">🏎️</div>
+              <div class="tip-title">Conduce a velocidad constante</div>
+              <div class="tip-text">Las aceleraciones y frenadas bruscas pueden aumentar el consumo de combustible hasta
+                un 37% y las emisiones de NOx.</div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">🔩</div>
+              <div class="tip-title">Bujías funcionando</div>
+              <div class="tip-text">Bujías desgastadas causan combustión incompleta, aumentando las emisiones de
+                hidrocarburos no quemados hasta un 15%.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: TALLERES -->
+        <div class="tab-content" id="tab-talleres">
+          <div class="taller-filters">
+            <button class="filter-btn active" (click)="filterTaller($any($event.currentTarget))">Todos</button>
+            <button class="filter-btn" (click)="filterTaller($any($event.currentTarget))">🌿 Certificados
+              Ambientales</button>
+            <button class="filter-btn" (click)="filterTaller($any($event.currentTarget))">🔍 CDA - RTM</button>
+            <button class="filter-btn" (click)="filterTaller($any($event.currentTarget))">⚡ Multimarca</button>
+            <button class="filter-btn" (click)="filterTaller($any($event.currentTarget))">🏆 Más valorados</button>
+          </div>
+          <div class="taller-list">
+            <div class="taller-card">
+              <div class="taller-avatar" style="background:rgba(79,255,170,0.1)">🏭</div>
+              <div>
+                <div class="taller-name">TecniLlanta Barranquilla</div>
+                <div class="taller-info">Avenida Shakira Cll72 #53 · Nte-Centro Histórico · Barranquilla</div>
+                <span class="taller-badge">🌿 Cert. Ambiental ICONTEC</span>
+              </div>
+              <div class="taller-right">
+                <div class="taller-stars">★★★★★</div>
+                <div class="taller-dist">1.2 km · $85,000 COP avg</div>
+                <button (click)="showToast('📞 Redirigiendo a TecniLlanta Barraqilla...')"
+                  style="margin-top:8px;background:var(--verde);color:#fff;border:none;padding:6px 14px;border-radius:50px;font-size:0.72rem;cursor:pointer;font-family:var(--font-body)">Agendar
+                  cita</button>
+              </div>
+            </div>
+            <div class="taller-card">
+              <div class="taller-avatar" style="background:rgba(245,197,24,0.1)">🔍</div>
+              <div>
+                <div class="taller-name">CDA Centro Diagnóstico</div>
+                <div class="taller-info">Cll 30 #25-90 · Rebolo · Barranquilla</div>
+                <span class="taller-badge taller-cert">🏅 CDA Autorizado Mintransporte</span>
+              </div>
+              <div class="taller-right">
+                <div class="taller-stars">★★★★☆</div>
+                <div class="taller-dist">2.8 km · $140,000 COP RTM</div>
+                <button (click)="showToast('📞 Redirigiendo a CDA Centro Diagnóstico...')"
+                  style="margin-top:8px;background:var(--verde);color:#fff;border:none;padding:6px 14px;border-radius:50px;font-size:0.72rem;cursor:pointer;font-family:var(--font-body)">Agendar
+                  cita</button>
+              </div>
+            </div>
+            <div class="taller-card">
+              <div class="taller-avatar" style="background:rgba(79,170,255,0.1)">⚡</div>
+              <div>
+                <div class="taller-name">Serviteca El Miura</div>
+                <div class="taller-info">62125 Cra. 1a · Carrizal · Barranquilla</div>
+                <span class="taller-badge">🌿 Cert. Ambiental</span>
+              </div>
+              <div class="taller-right">
+                <div class="taller-stars">★★★★★</div>
+                <div class="taller-dist">4.1 km · $70,000 COP avg</div>
+                <button (click)="showToast('📞 Redirigiendo a Serviteca El Salitre...')"
+                  style="margin-top:8px;background:var(--verde);color:#fff;border:none;padding:6px 14px;border-radius:50px;font-size:0.72rem;cursor:pointer;font-family:var(--font-body)">Agendar
+                  cita</button>
+              </div>
+            </div>
+            <div class="taller-card">
+              <div class="taller-avatar" style="background:rgba(224,92,42,0.1)">🔧</div>
+              <div>
+                <div class="taller-name">AutoExperto v2</div>
+                <div class="taller-info"> Cra. 1h #37c9 · Los Laureles · Barranquilla</div>
+                <span class="taller-badge taller-cert">🏅 CDA Autorizado Mintransporte</span>
+              </div>
+              <div class="taller-right">
+                <div class="taller-stars">★★★★☆</div>
+                <div class="taller-dist">Barranquilla · $130,000 COP RTM</div>
+                <button (click)="showToast('📞 Redirigiendo a AutoExperto Medellín...')"
+                  style="margin-top:8px;background:var(--verde);color:#fff;border:none;padding:6px 14px;border-radius:50px;font-size:0.72rem;cursor:pointer;font-family:var(--font-body)">Agendar
+                  cita</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: HISTORIAL -->
+        <div class="tab-content" id="tab-historial">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+            <div  style="font-family:var(--font-head); font-weight:700; font-size:1rem">📋 Historial del Vehículo —
+              {{ vehiculo ? vehiculo.marca + ' ' + vehiculo.modelo + ' ' + vehiculo.anio : 'Sin vehículo' }}</div>
+
+
+            <div>
+              <button (click)="openModalMantenimiento()"
+                style=" margin-right: 7px; background:var(--verde);color:#fff;border:none;padding:9px 18px;border-radius:50px;font-size:0.8rem;cursor:pointer;font-family:var(--font-head);font-weight:700">+
+                Agregar mantenimiento</button>
+              <button (click)="showToast('📄 Generando reporte PDF...')"
+                style="background:var(--verde);color:#fff;border:none;padding:9px 18px;border-radius:50px;font-size:0.8rem;cursor:pointer;font-family:var(--font-head);font-weight:700">Exportar
+                PDF</button>
+            </div>
+
+
+
+          </div>
+          <div class="timeline">
+            <div *ngIf="mantenimientos.length === 0" style="color:var(--gris); font-size:0.85rem; padding:16px 0">
+              No hay mantenimientos registrados aún.
+            </div>
+            <div class="tl-item" *ngFor="let m of mantenimientos">
+              <div class="tl-dot" style="background:rgba(79,255,170,0.15)">🔧</div>
+              <div class="tl-body">
+                <div class="tl-name">{{ m.tipo }}</div>
+                <div class="tl-detail">{{ m.kilometraje }} km · ${{ m.costo | number }} COP</div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-date" style="font-size:0.8rem">{{ m.fecha | date:'dd MMM yyyy' }}</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px">
+            <div class="kpi-card">
+              <div class="kpi-label">Total invertido 2024</div>
+              <div class="kpi-val" style="font-size:1.3rem; color:var(--blanco)">${{ vehiculo ? vehiculo.totalInvertido || 0 : 0 }}</div>
+              <div class="kpi-sub" style="color:var(--verde-neon)">COP este año</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Ahorro estimado</div>
+              <div class="kpi-val kpi-good" style="font-size:1.3rem;">${{ vehiculo ? vehiculo.totalInvertido * 0.25 || 0 : 0 }}</div>
+              <div class="kpi-sub kpi-good">COP en reparaciones evitadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyDashboard>
+      <div style="max-width: 760px; margin: 0 auto; background: linear-gradient(135deg, rgba(26,122,74,0.16), rgba(21,27,35,0.9)); border: 1px solid rgba(79,255,170,0.12); border-radius: 24px; padding: 28px; text-align:center; box-shadow: 0 24px 50px rgba(0,0,0,0.25);">
+        <div style="font-family:var(--font-head); font-weight:800; font-size:1.1rem; margin-bottom:8px">El panel se activará al seleccionar un vehículo</div>
+        <div style="font-size:0.85rem; color:var(--gris); line-height:1.6">Escoge uno arriba para ver toda la información de ese vehículo en el tablero.</div>
+      </div>
+    </ng-template>
+  </section>
+
+
+  <!-- MODAL: REGISTRAR VEHÍCULO -->
+
+  <div class="modal-overlay" id="modal" (click)="closeModalOutside($event)">
+    <div class="modal">
+      <button class="modal-close" (click)="closeModal()">✕</button>
+      <h3>🚗 Registrar Vehículo</h3>
+      <p>Ingresa los datos de tu vehículo para comenzar a gestionar su mantenimiento y monitorear emisiones.</p>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Placa</label>
+          <input type="text" [(ngModel)]="nuevoVehiculo.placa" placeholder="ABC 123" maxlength="7"
+            style="text-transform:uppercase">
+        </div>
+        <div class="form-row">
+          <label>Año</label>
+          <input type="number" [(ngModel)]="nuevoVehiculo.anio" placeholder="2018" min="1990" max="2024">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Marca</label>
+        <input type="text" [(ngModel)]="nuevoVehiculo.marca" placeholder="Ej: Renault">
+        <label>Modelo</label>
+        <input type="text" [(ngModel)]="nuevoVehiculo.modelo" placeholder="Ej: Logan">
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Tipo de combustible</label>
+          <select [(ngModel)]="nuevoVehiculo.combustible">
+            <option>Gasolina</option>
+            <option>Diesel</option>
+            <option>Gas Natural (GNV)</option>
+            <option>Híbrido</option>
+            <option>Eléctrico</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Kilometraje actual</label>
+          <input type="number" [(ngModel)]="nuevoVehiculo.kilometraje" placeholder="45.230">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Fecha vencimiento RTM</label>
+        <input [(ngModel)]="nuevoVehiculo.fechaRtm" type="date">
+      </div>
+      <button class="btn-primary" (click)="registerVehicle()">Registrar y comenzar →</button>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR MANTENIMIENTO -->
+   
+  <div class="modal-overlay" id="modal-mantenimiento" (click)="closeModalMantenimientoOutside($event)">
+    <div class="modal">
+      <button class="modal-close" (click)="closeModalMantenimiento()">✕</button>
+      <h3>🔧 Registrar Mantenimiento</h3>
+      <p>Registra un servicio realizado a tu vehículo.</p>
+      <div class="form-row">
+        <label>Tipo de mantenimiento</label>
+        <select [(ngModel)]="nuevoMantenimiento.tipo">
+          <option>Cambio de Aceite</option>
+          <option>Filtro de Aire</option>
+          <option>Pastillas de Freno</option>
+          <option>Cambio de Bujías</option>
+          <option>Revisión de Batería</option>
+          <option>Cambio de Llantas</option>
+          <option>Revisión General</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Fecha</label>
+          <input type="date" [(ngModel)]="nuevoMantenimiento.fecha">
+        </div>
+        <div class="form-row">
+          <label>Kilometraje</label>
+          <input type="number" [(ngModel)]="nuevoMantenimiento.kilometraje" placeholder="45.000">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Costo (COP)</label>
+        <input type="number" [(ngModel)]="nuevoMantenimiento.costo" placeholder="85.000">
+      </div>
+      <button class="btn-primary" (click)="registrarMantenimiento()">Guardar →</button>
+    </div>
+  </div>
+
+
