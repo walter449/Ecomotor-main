@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecomotor</title>
+  <link rel="stylesheet" href="landing.component.css">
+</head>
+
+<body>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Eco<span>motor</span></div>
+    <ul class="nav-links">
+      <li><a href="#features">Funciones</a></li>
+      <li><a href="#dashboard">Mi Vehículo</a></li>
+      <li><a href="#emisiones">Emisiones</a></li>
+      <li><a href="#ods">ODS 13</a></li>
+    </ul>
+    <div>
+      <button class="nav-btn" type="button" (click)="goToLogin()" style="background:transparent; border:1px solid rgba(255,255,255,0.2); margin-right:8px">
+        Iniciar sesión
+      </button>
+      <button class="nav-btn" type="button" (click)="goToRegister()">Registrate</button>
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span> 
+        Mantenimiento preventivo
+      </div>
+      <h1>
+        Tu vehículo,<br>el <span class="accent">clima</span> y<br><span class="accent2">tu bolsillo</span>
+      </h1>
+      <p class="hero-sub">
+        Programa mantenimientos, recibe alertas y no se te venza la RTM.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary">Únete ya →</button>
+        <button class="btn-secondary" (click)="scrollToSection('dashboard')">Ver demo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-label">
+      Funcionalidades
+    </div>
+    <h2 class="section-title">
+      Ayuda al clima <br>y mantén tu vehículo a punto.
+    </h2>
+    <p class="section-sub">
+      Gestión de mantenimiento, alertas de RTM y monitoreo de emisiones.
+    </p>
+
+    <div class="features-grid">
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(79,255,170,0.1)">🗓️</div>
+        <div class="feat-title">
+          Calendario de Mantenimiento
+        </div>
+        <div class="feat-desc">
+          Registra y programa cambios de aceite, filtros, frenos y más. Recibe alertas antes de que
+          venzan para evitar fallas y daños mayores.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(245,197,24,0.1)">🔍</div>
+        <div class="feat-title">
+          Alertas de RTM
+        </div>
+        <div class="feat-desc">
+          Monitorea la vigencia de tu revisión técnico-mecánica. Evita multas de hasta $650.000
+          COP.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(79,170,255,0.1)">🌿</div>
+        <div class="feat-title">
+          Monitor de Emisiones
+        </div>
+        <div class="feat-desc">
+          Calcula el CO₂ estimado de tu vehículo según su estado. Visualiza tu huella de carbono y
+          acciones para reducirla alineadas al ODS 13.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(224,92,42,0.1)">📍</div>
+        <div class="feat-title">
+          Talleres Certificados
+        </div>
+        <div class="feat-desc">
+          Encuentra los talleres más cercanos con certificación ambiental en tu ciudad. Filtra por
+          especialidad, calificación y precio estimado.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(192,57,43,0.1)">📊</div>
+        <div class="feat-title">
+          Historial & Reportes
+        </div>
+        <div class="feat-desc">
+          Lleva un registro completo del historial de tu vehículo. Genera reportes para reventa,
+          seguros o trámites oficiales ante el Ministerio de Transporte.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(155,89,182,0.1)">🎓</div>
+        <div class="feat-title">
+          Sensibilización Climática (Próximamente)
+        </div>
+        <div class="feat-desc">
+          Accede a contenido educativo sobre la relación entre vehículos, calidad del aire y cambio
+          climático. Aprende a reducir tu huella de carbono.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ODS SECTION -->
+  <section class="ods-section" id="ods">
+    <div class="section-label">
+      Impacto Global
+    </div>
+    <h2 class="section-title">
+      Alineado con los ODS de la ONU
+    </h2>
+    <p class="section-sub">
+      Ecomotor contribuye directamente, con especial enfoque al el ODS 13: Acción por el Clima.
+    </p>
+
+    <div class="ods-grid">
+
+      <div class="ods-card">
+        <div class="ods-num" style="color:#3F7E44">1</div>
+        <div class="ods-title">Acción por el Clima</div>
+        <div class="ods-desc">
+          Reducción directa de emisiones de CO₂ y contaminantes vehiculares que contribuyen al
+          calentamiento global y al deterioro del aire en ciudades colombianas.</div>
+      </div>
+
+      <div class="ods-card">
+        <div class="ods-num" style="color:#FD9D24">2</div>
+        <div class="ods-title">Ciudades Sostenibles</div>
+        <div class="ods-desc">Vehículos en buen estado mejoran la calidad del aire urbano, reducen la contaminación
+          sonora y contribuyen a ciudades más habitables y sostenibles.</div>
+      </div>
+
+      <div class="ods-card">
+        <div class="ods-num" style="color:#BF8B2E">3</div>
+        <div class="ods-title">Producción Responsable</div>
+        <div class="ods-desc">El mantenimiento preventivo alarga la vida útil de los vehículos, reduciendo el consumo de
+          recursos naturales y la generación de residuos automotrices.</div>
+      </div>
+
+      <div class="ods-card">
+        <div class="ods-num" style="color:#A21942">4</div>
+        <div class="ods-title">Salud y Bienestar</div>
+        <div class="ods-desc">La reducción de emisiones vehiculares disminuye enfermedades respiratorias. En Colombia,
+          el 35% de la contaminación urbana proviene del parque automotor.</div>
+      </div>
+    </div>
+
+    <div
+      style="background:rgba(79,255,170,0.06); border:1px solid rgba(79,255,170,0.15); border-radius:20px; padding:28px; margin-top:32px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; text-align:center;">
+      <div>
+        <div style="font-family:var(--font-head); font-weight:800; font-size:2rem; color:var(--verde-neon)">35%</div>
+        <div style="font-size:0.78rem; color:var(--gris); margin-top:4px">De la contaminación urbana en Colombia
+          proviene del parque automotor</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-head); font-weight:800; font-size:2rem; color:var(--amarillo)">15.6M</div>
+        <div style="font-size:0.78rem; color:var(--gris); margin-top:4px">Vehículos registrados en Colombia que
+          requieren mantenimiento adecuado</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-head); font-weight:800; font-size:2rem; color:var(--naranja)">NDC</div>
+        <div style="font-size:0.78rem; color:var(--gris); margin-top:4px">Colombia comprometida a reducir 51% sus
+          emisiones de GEI al 2030 (Acuerdo de París)</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-section">
+    <h2>Empieza hoy.<br>El clima no puede esperar.</h2>
+    <p>
+      Regístrate gratis y empieza a llevar el control de tu vehículo.
+    </p>
+
+    <div class="cta-wrap">
+      <button class="btn-primary" style="background:#fff; color:var(--verde)">
+        🚗 Registrar mi
+        vehículo
+      </button>
+      <button class="btn-secondary"
+        (click)="showToast('📱 Ecomotor App disponible próximamente en Google Play y App Store')"
+        style="border-color:rgba(255,255,255,0.4); color:#fff">
+        📱 Descargar App
+      </button>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <div class="footer-logo">EcoMotor</div>
+      <p style="margin-top:6px">Mantenimiento vehicular sin complicaciones</p>
+    </div>
+    <p>© 2026 Ecomotor. Proyecto universitario.</p>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✅</span>
+    <span id="toast-msg">Acción completada</span>
+  </div>
+
+  
