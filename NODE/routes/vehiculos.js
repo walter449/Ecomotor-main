@@ -12,13 +12,54 @@ router.get('/', (req, res) => {
 
 // POST registrar vehículo
 router.post('/', (req, res) => {
-  const { placa, marca, modelo, anio, combustible, kilometraje, id_usuario } = req.body;
+  // Datos enviados desde angular
+  const { placa, marca, modelo, anio, kilometraje, id_usuario } = req.body;
+  // Buscar la especificación correspondiente al vehículo
+  // usando marca + modelo + año
+  const queryEspecificacion = `
+    SELECT id
+    FROM especificaciones_vehiculos
+    WHERE marca = ?
+      AND modelo = ?
+      AND anio_modelo = ?
+    LIMIT 1
+  `;
+
   db.query(
-    'INSERT INTO vehiculos (placa, marca, modelo, anio, combustible, kilometraje, id_usuario) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [placa, marca, modelo, anio, combustible, kilometraje, id_usuario],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Vehículo registrado', id: result.insertId });
+    queryEspecificacion,
+    [marca, modelo, anio],
+    (err, especificaciones) => {
+
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      // Si no encuentra coincidencia en la tabla
+      // especificaciones_vehiculos
+      if (especificaciones.length === 0) {
+        return res.status(404).json({
+          error: 'No se encontró una especificación para ese vehículo'
+        });
+      }
+
+      // Obtener el id de la especificación encontrada
+      const id_especificacion = especificaciones[0].id;
+
+      // Ahora también se guarda id_especificacion
+      db.query(
+        'INSERT INTO vehiculos (placa, marca, modelo, anio, kilometraje, id_usuario, id_especificacion) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [placa, marca, modelo, anio,  kilometraje, id_usuario, id_especificacion],
+        (err, result) => {
+          if (err) {
+             return res.status(500).json({ error: err.message });
+          }
+
+          res.json({ message: 'Vehículo registrado',  
+                     id: result.insertId,
+                     id_especificacion: id_especificacion 
+          });
+        }
+      );
     }
   );
 });

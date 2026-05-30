@@ -15,23 +15,36 @@
 <!-- DASHBOARD INTERACTIVO -->
   <section class="dashboard-section" id="dashboard">
 
+    <!--Select para cargar el panel-->
     <div style="max-width: 760px; margin: 0 auto 20px; background: var(--carbon2); border: 1px solid rgba(79,255,170,0.12); border-radius: 20px; padding: 18px 20px; box-shadow: 0 24px 50px rgba(0,0,0,0.25);">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:10px">
         <div>
           <div style="font-family:var(--font-head); font-weight:700; font-size:0.95rem; margin-bottom:4px">Selecciona un vehículo para cargar el panel</div>
-          <div style="font-size:0.8rem; color:var(--gris)">Cuando elijas uno, se mostrará su EcoScore, mantenimiento y RTM.</div>
+          <div style="font-size:0.8rem; color:var(--gris)">
+            Cuando elijas uno, se mostrará su EcoScore, mantenimiento y RTM.
+          </div>
         </div>
         <span class="dash-plate">{{ vehiculo ? vehiculo.placa : 'Sin vehículo' }}</span>
       </div>
+
       <select *ngIf="vehiculos.length > 0" [ngModel]="vehiculo?.id || null" (ngModelChange)="seleccionarVehiculo($event)"
         style="background:var(--carbon3); border:1px solid rgba(255,255,255,0.1); color:var(--blanco); padding:10px 12px; border-radius:10px; font-family:var(--font-body); font-size:0.85rem; width:100%">
-        <option [ngValue]="null">Selecciona un vehículo</option>
-        <option *ngFor="let v of vehiculos" [ngValue]="v.id">{{ v.marca }} {{ v.modelo }} — {{ v.placa }}</option>
+        <option [ngValue]="null">
+          Selecciona un vehículo
+        </option>
+        <option *ngFor="let v of vehiculos" [ngValue]="v.id">
+          {{ v.marca }} {{ v.modelo }} — {{ v.placa }}
+        </option>
       </select>
-      <div *ngIf="vehiculos.length === 0" style="font-size:0.82rem; color:var(--gris); margin-top:10px">Aún no tienes vehículos registrados.</div>
+
+      <div *ngIf="vehiculos.length === 0" style="font-size:0.82rem; color:var(--gris); margin-top:10px">
+        Aún no tienes vehículos registrados.
+      </div>
     </div>
 
-    <div *ngIf="vehiculo; else emptyDashboard" class="dashboard-app">
+    <!--Panel de control-->
+    <div *ngIf="vehiculo; else emptyDashboard" class="dashboard-app"> 
+
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="sidebar-logo">Panel de control</div>
@@ -39,7 +52,7 @@
         <div class="sidebar-item active" (click)="switchTab('resumen', $any($event.currentTarget))">
           <span class="icon">📊</span> Resumen
         </div>
-        <div class="sidebar-item active" (click)="switchTab('vehiculo', $any($event.currentTarget))">
+        <div class="sidebar-item" (click)="switchTab('vehiculo', $any($event.currentTarget))">
           <span class="icon">🚗</span> Mi vehiculo
         </div>
         <div class="sidebar-item" (click)="switchTab('rtm', $any($event.currentTarget))">
@@ -138,7 +151,8 @@
           </div>
         </div>
 
-      <div class="tab-content" id="tab-vehiculo">
+        <!--TAB: MI VEHICULO-->
+        <div class="tab-content" id="tab-vehiculo">
       <div class="car-dashboard">
         <div class="dash-header">
           <span class="dash-title">🚙 Mi Vehículo</span>
@@ -194,9 +208,7 @@
           </div>
         </div>
       </div>
-    </div>
-
-        
+        </div>
 
         <!-- TAB: RTM -->
         <div class="tab-content" id="tab-rtm">
@@ -433,17 +445,18 @@
       </div>
     </div>
 
+    <!--No hay vehiculos seleccionados-->
     <ng-template #emptyDashboard>
       <div style="max-width: 760px; margin: 0 auto; background: linear-gradient(135deg, rgba(26,122,74,0.16), rgba(21,27,35,0.9)); border: 1px solid rgba(79,255,170,0.12); border-radius: 24px; padding: 28px; text-align:center; box-shadow: 0 24px 50px rgba(0,0,0,0.25);">
         <div style="font-family:var(--font-head); font-weight:800; font-size:1.1rem; margin-bottom:8px">El panel se activará al seleccionar un vehículo</div>
         <div style="font-size:0.85rem; color:var(--gris); line-height:1.6">Escoge uno arriba para ver toda la información de ese vehículo en el tablero.</div>
       </div>
     </ng-template>
+
   </section>
 
 
   <!-- MODAL: REGISTRAR VEHÍCULO -->
-
   <div class="modal-overlay" id="modal" (click)="closeModalOutside($event)">
     <div class="modal">
       <button class="modal-close" (click)="closeModal()">✕</button>
@@ -455,10 +468,6 @@
           <input type="text" [(ngModel)]="nuevoVehiculo.placa" placeholder="ABC 123" maxlength="7"
             style="text-transform:uppercase">
         </div>
-        <div class="form-row">
-          <label>Año</label>
-          <input type="number" [(ngModel)]="nuevoVehiculo.anio" placeholder="2018" min="1990" max="2024">
-        </div>
       </div>
       <div class="form-row">
         <label>Marca</label>
@@ -468,30 +477,19 @@
       </div>
       <div class="form-grid">
         <div class="form-row">
-          <label>Tipo de combustible</label>
-          <select [(ngModel)]="nuevoVehiculo.combustible">
-            <option>Gasolina</option>
-            <option>Diesel</option>
-            <option>Gas Natural (GNV)</option>
-            <option>Híbrido</option>
-            <option>Eléctrico</option>
-          </select>
+          <label>Año del vehículo</label>
+          <input type="number" [(ngModel)]="nuevoVehiculo.anio" placeholder="2018" min="1990" max="2024">
         </div>
         <div class="form-row">
           <label>Kilometraje actual</label>
           <input type="number" [(ngModel)]="nuevoVehiculo.kilometraje" placeholder="45.230">
         </div>
       </div>
-      <div class="form-row">
-        <label>Fecha vencimiento RTM</label>
-        <input [(ngModel)]="nuevoVehiculo.fechaRtm" type="date">
-      </div>
       <button class="btn-primary" (click)="registerVehicle()">Registrar y comenzar →</button>
     </div>
   </div>
 
   <!-- MODAL: REGISTRAR MANTENIMIENTO -->
-   
   <div class="modal-overlay" id="modal-mantenimiento" (click)="closeModalMantenimientoOutside($event)">
     <div class="modal">
       <button class="modal-close" (click)="closeModalMantenimiento()">✕</button>
