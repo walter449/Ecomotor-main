@@ -66,11 +66,33 @@ router.post('/', (req, res) => {
 
 // GET vehículos por usuario
 router.get('/usuario/:id_usuario', (req, res) => {
+  const query = `
+    SELECT
+      v.*,
+      e.clase_vehiculo,
+      e.cilindraje_motor,
+      e.cilindros,
+      e.transmision,
+      e.tipo_combustible,
+      e.consumo_ciudad,
+      e.consumo_carretera,
+      e.consumo_combinado,
+      e.consumo_mpg,
+      e.co2_base
+    FROM vehiculos v
+    LEFT JOIN especificaciones_vehiculos e
+      ON v.id_especificacion = e.id
+    WHERE v.id_usuario = ?
+  `;
+
   db.query(
-    'SELECT * FROM vehiculos WHERE id_usuario = ?',
+    query,
     [req.params.id_usuario],
     (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      console.log(results);
       res.json(results);
     }
   );

@@ -13,6 +13,7 @@ import { MantenimientosService } from '../../services/mantenimientos.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent implements OnInit {
   private toastTimer: any;
   vehiculos: any[] = [];
@@ -23,9 +24,7 @@ export class DashboardComponent implements OnInit {
     marca: '',
     modelo: '',
     anio: null,
-    combustible: 'Gasolina',
     kilometraje: null,
-    fechaRtm: '',
     id_usuario: null
   };
 
@@ -78,8 +77,8 @@ export class DashboardComponent implements OnInit {
       next: (data) => {
         this.mantenimientos = data;
 
-        this.vehiculo.totalInvertido =
-          this.calcularTotalInvertido(this.vehiculo);
+       /* this.vehiculo.totalInvertido =
+          this.calcularTotalInvertido(this.vehiculo);*/
 
       },
       error: (err) => console.error(err)
@@ -97,13 +96,15 @@ export class DashboardComponent implements OnInit {
     }
 
     this.vehiculo = this.vehiculos.find(v => v.id === Number(id)) || null;
-    if (this.vehiculo) {
+    console.log('Vehículo seleccionado:', this.vehiculo);
+
+    /*if (this.vehiculo) {
       this.vehiculo.ecoScore =
         this.calcularEcoScore(this.vehiculo);
 
       this.cargarMantenimientos();
 
-    }
+    }*/
   }
 
   ngOnInit(): void {
@@ -184,12 +185,12 @@ export class DashboardComponent implements OnInit {
     this.vehiculosService.registrarVehiculo(this.nuevoVehiculo).subscribe({
       next: (res) => {
         const hoy = new Date();
-        const fechaVencimiento = new Date(this.nuevoVehiculo.fechaRtm);
-        const estado = fechaVencimiento >= hoy ? 'vigente' : 'vencida';
+        //const fechaVencimiento = new Date(this.nuevoVehiculo.fechaRtm);
+        //const estado = fechaVencimiento >= hoy ? 'vigente' : 'vencida';
 
         const rtm = {
-          fecha_vencimiento: this.nuevoVehiculo.fechaRtm,
-          estado: estado,
+         // fecha_vencimiento: this.nuevoVehiculo.fechaRtm,
+         // estado: estado,
           id_vehiculo: res.id
         };
         this.rtmService.registrarRtm(rtm).subscribe({
@@ -210,7 +211,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  calcularEcoScore(vehiculo: any): number {
+  /*calcularEcoScore(vehiculo: any): number {
     let score = 100;
     // kilometraje
     if (vehiculo.kilometraje > 150000) {
@@ -221,10 +222,10 @@ export class DashboardComponent implements OnInit {
     }
     else if (vehiculo.kilometraje > 30000) {
       score -= 10;
-    }
+    };*/
 
     // combustible
-    switch (vehiculo.combustible.toLowerCase()) {
+   /* switch (vehiculo.combustible.toLowerCase()) {
 
       case 'diesel':
         score -= 25;
@@ -257,7 +258,7 @@ export class DashboardComponent implements OnInit {
     });
 
     return total;
-  }
+  }*/
 
   toggleCheck(el: HTMLElement): void {
     el.classList.toggle('checked');
