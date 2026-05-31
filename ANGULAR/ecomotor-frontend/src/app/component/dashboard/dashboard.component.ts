@@ -16,9 +16,13 @@ import { MantenimientosService } from '../../services/mantenimientos.service';
 
 export class DashboardComponent implements OnInit {
   private toastTimer: any;
+
+  //Lista de vehículos pertenecientes al usuario autenticado.
   vehiculos: any[] = [];
+  //Vehículo actualmente seleccionado por el usuario.
   vehiculo: any = null;
 
+  //almacenar temporalmente la información ingresada en el formulario de registro de vehículos
   nuevoVehiculo = {
     placa: '',
     marca: '',
@@ -28,8 +32,9 @@ export class DashboardComponent implements OnInit {
     id_usuario: null
   };
 
+  //Almacena todos los mantenimientos asociados al vehículo seleccionado
   mantenimientos: any[] = [];
-
+  //Modelo utilizado para almacenar la información ingresada en el formulario de registro de mantenimiento.
   nuevoMantenimiento = {
     tipo: '',
     fecha: '',
@@ -38,6 +43,7 @@ export class DashboardComponent implements OnInit {
     id_vehiculo: null
   };
 
+  /* Abre la ventana modal para registrar un mantenimiento. Antes de abrir el formulario verifica que exista un vehículo seleccionado. Si no existe, muestra una notificación de advertencia */
   openModalMantenimiento(): void {
     if (!this.vehiculo) {
       this.showToast('⚠️ Primero registra un vehículo');
@@ -48,15 +54,18 @@ export class DashboardComponent implements OnInit {
     document.body.style.overflow = 'hidden';
   }
 
+  /*Cierra la ventana modal de registro de mantenimiento y restablece el desplazamiento normal de la página*/
   closeModalMantenimiento(): void {
     document.getElementById('modal-mantenimiento')?.classList.remove('open');
     document.body.style.overflow = '';
   }
 
+  /*Permite cerrar la ventana modal cuando el usuario hace clic fuera del contenido principal.*/
   closeModalMantenimientoOutside(e: Event): void {
     if (e.target === document.getElementById('modal-mantenimiento')) this.closeModalMantenimiento();
   }
 
+  /* Envía al servidor la información del mantenimiento ingresada por el usuario*/
   registrarMantenimiento(): void {
     this.mantenimientosService.registrarMantenimiento(this.nuevoMantenimiento).subscribe({
       next: () => {
@@ -71,6 +80,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  /* Consulta todos los mantenimientos asociados al vehículo seleccionado y los almacena para su visualización en la interfaz*/
   cargarMantenimientos(): void {
     if (!this.vehiculo) return;
     this.mantenimientosService.getMantenimientosPorVehiculo(this.vehiculo.id).subscribe({
@@ -86,8 +96,23 @@ export class DashboardComponent implements OnInit {
   }
 
 
-  constructor(private vehiculosService: VehiculosService, private rtmService: RtmService, private mantenimientosService: MantenimientosService, private router: Router) { }
+  /*
+ * Constructor del componente.
+ *
+ * Inyecta los servicios necesarios para:
+ * - Gestionar vehículos.
+ * - Gestionar RTM.
+ * - Gestionar mantenimientos.
+ * - Navegar entre vistas.
+ */
+  constructor(
+    private vehiculosService: VehiculosService, 
+    private rtmService: RtmService, 
+    private mantenimientosService: MantenimientosService, 
+    private router: Router
+  ) { }
 
+  //Permite seleccionar un vehículo de la lista
   seleccionarVehiculo(id: number | null): void {
     if (!id) {
       this.vehiculo = null;
@@ -107,27 +132,25 @@ export class DashboardComponent implements OnInit {
     }*/
   }
 
+  //Método del ciclo de vida de Angular
   ngOnInit(): void {
 
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     this.nuevoVehiculo.id_usuario = usuario.id;
 
+    //Consulta al backend los vehículos asociados al usuario autenticado
     this.vehiculosService.getVehiculosPorUsuario(usuario.id).subscribe({
       next: (data) => {
+
+        console.log('VEHICULOS RECIBIDOS:', data);
+
         this.vehiculos = data;
         this.vehiculo = null;
       },
       error: (err) => console.error(err)
     });
 
-
-
-
-    setTimeout(() => {
-      const ring = document.getElementById('heroRing');
-      if (ring) (ring as any).style.strokeDashoffset = '44';
-    }, 500);
-
+    //Crea un IntersectionObserver (animación)
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -137,19 +160,13 @@ export class DashboardComponent implements OnInit {
       });
     }, { threshold: 0.1 });
 
+
     document.querySelectorAll('.feat-card, .ods-card, .kpi-card, .tl-item')
       .forEach(el => observer.observe(el));
 
-    this.vehiculosService.getVehiculosPorUsuario(usuario.id)
-      .subscribe((data: any) => {
-
-        this.vehiculos = data;
-
-        this.vehiculo = null;
-
-      });
   }
 
+  //Función encargada de cambiar entre las diferentes pestañas o secciones del panel lateral
   switchTab(name: string, el: HTMLElement): void {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
@@ -157,6 +174,7 @@ export class DashboardComponent implements OnInit {
     el.classList.add('active');
   }
 
+  // Función encargada de mostrar una notificación tipo toast.
   showToast(msg: string): void {
     const t = document.getElementById('toast');
     const msgEl = document.getElementById('toast-msg');
@@ -167,20 +185,24 @@ export class DashboardComponent implements OnInit {
     this.toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
   }
 
+  //Función encargada de abrir la ventana modal
   openModal(): void {
     document.getElementById('modal')?.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
+  //Función encargada de cerrar la ventana modal
   closeModal(): void {
     document.getElementById('modal')?.classList.remove('open');
     document.body.style.overflow = '';
   }
 
+  //Función que permite cerrar el modal al hacer clic fuera de su contenido principal
   closeModalOutside(e: Event): void {
     if (e.target === document.getElementById('modal')) this.closeModal();
   }
 
+  //registrar un vehiculo
   registerVehicle(): void {
     this.vehiculosService.registrarVehiculo(this.nuevoVehiculo).subscribe({
       next: (res) => {
@@ -260,6 +282,8 @@ export class DashboardComponent implements OnInit {
     return total;
   }*/
 
+
+  /*Gestiona el estado de los elementos de una lista de verificación relacionada con la RTM. Permite marcar y desmarcar ítems completados. Cuando todos los elementos han sido completados, muestra una notificación informativa.*/
   toggleCheck(el: HTMLElement): void {
     el.classList.toggle('checked');
     const box = el.querySelector('.check-box') as HTMLElement;
@@ -275,9 +299,12 @@ export class DashboardComponent implements OnInit {
     this.showToast('🔍 Filtrando talleres por: ' + el.textContent?.trim());
   }
 
+  //Realiza un desplazamiento suave hacia una sección específica de la página.
   scrollToSection(id: string): void {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   }
+
+  //Cierra la sesión del usuario actual
   logout(): void {
     localStorage.removeItem('usuario');
     this.router.navigate(['/login']);
