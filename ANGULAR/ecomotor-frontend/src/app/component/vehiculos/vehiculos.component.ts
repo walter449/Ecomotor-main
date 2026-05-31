@@ -7,7 +7,7 @@ import { VehiculosService } from '../../services/vehiculos.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './vehiculos.component.html',
-  styleUrl: './vehiculos.component.css'
+  styleUrls: ['./vehiculos.component.css']
 })
 export class VehiculosComponent implements OnInit {
 

@@ -11,7 +11,7 @@ import { MantenimientosService } from '../../services/mantenimientos.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
   private toastTimer: any;
