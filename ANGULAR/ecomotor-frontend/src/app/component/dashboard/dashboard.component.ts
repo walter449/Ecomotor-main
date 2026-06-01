@@ -289,6 +289,7 @@ cargarTalleres(): void {
     this.usuarioId = usuario.id || null;
 
     this.cargarVehiculosUsuario();
+    this.cargarTiposMantenimiento();
 
     //Crea un IntersectionObserver (animación)
     const observer = new IntersectionObserver((entries) => {

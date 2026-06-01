@@ -56,6 +56,9 @@
         <div class="sidebar-item" (click)="switchTab('historial', $any($event.currentTarget))">
           <span class="icon">📋</span> Historial
         </div>
+        <div class="sidebar-item" (click)="switchTab('tipos-mantenimiento', $any($event.currentTarget))">
+          <span class="icon">🛠️</span> Tipos de mantenimiento
+        </div>
       </div>
 
       <!-- Main Content -->
@@ -252,6 +255,38 @@
               <div class="kpi-val kpi-good" style="font-size:1.3rem;">${{ vehiculo ? vehiculo.totalInvertido * 0.25 || 0 : 0 }}</div>
               <div class="kpi-sub kpi-good">COP en reparaciones evitadas</div>
             </div>
+          </div>
+        </div>
+
+        <!-- TAB: TIPOS DE MANTENIMIENTO -->
+        <div class="tab-content" id="tab-tipos-mantenimiento">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+            <div style="font-family:var(--font-head); font-weight:700; font-size:1rem">
+              🛠️ Tipos de mantenimiento
+            </div>
+          </div>
+
+          <div class="maintenance-types-card">
+            <table class="maintenance-types-table" *ngIf="tiposMantenimiento.length > 0; else emptyTiposMantenimiento">
+              <thead>
+                <tr>
+                  <th>Tipo de mantenimiento</th>
+                  <th>Cada km</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let tipo of tiposMantenimiento">
+                  <td>{{ tipo.nombre }}</td>
+                  <td>{{ tipo.cada_km | number }} km</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <ng-template #emptyTiposMantenimiento>
+              <div style="color:var(--gris); font-size:0.85rem; padding:8px 2px">
+                No hay tipos de mantenimiento registrados.
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>

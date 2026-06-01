@@ -162,5 +162,41 @@
   }
   .taller-cert { background: rgba(245,197,24,0.12); color: var(--amarillo); }
 
+  .maintenance-types-card {
+    background: var(--carbon3);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+
+  .maintenance-types-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .maintenance-types-table th,
+  .maintenance-types-table td {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.85rem;
+  }
+
+  .maintenance-types-table th {
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--verde-neon);
+    background: rgba(79,255,170,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .maintenance-types-table td {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--blanco);
+  }
+
+  .maintenance-types-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
   
   
