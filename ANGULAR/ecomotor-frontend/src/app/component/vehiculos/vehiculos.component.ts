@@ -12,7 +12,6 @@ import { VehiculosService } from '../../services/vehiculos.service';
 export class VehiculosComponent implements OnInit {
 
   vehiculos: any[] = [];
-  ecoScore: number = 0;
   totalInvertido: number = 0;
 
   constructor(private vehiculosService: VehiculosService) {}

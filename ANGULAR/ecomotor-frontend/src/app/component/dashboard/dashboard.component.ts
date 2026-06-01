@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VehiculosService } from '../../services/vehiculos.service';
-import { RtmService } from '../../services/rtm.service';
 import { Router } from '@angular/router';
 import { MantenimientosService } from '../../services/mantenimientos.service';
 
@@ -16,6 +15,7 @@ import { MantenimientosService } from '../../services/mantenimientos.service';
 
 export class DashboardComponent implements OnInit {
   private toastTimer: any;
+  private usuarioId: number | null = null;
 
   //Lista de vehículos pertenecientes al usuario autenticado.
   vehiculos: any[] = [];
@@ -38,12 +38,14 @@ export class DashboardComponent implements OnInit {
   nuevaOrden = {
     fecha: '',
     kilometraje: null,
-    costo_total: null,
     id_taller: null,
     id_vehiculo: null
   };
 
-  serviciosSeleccionados: number[] = [];
+  serviciosSeleccionados: Array<{
+    id_tipo_mantenimiento: number | null;
+    costo: number | null;
+  }> = [];
 
   tiposMantenimiento: any[] = [];
 
@@ -80,7 +82,10 @@ export class DashboardComponent implements OnInit {
 
 agregarServicio(): void {
 
-  this.serviciosSeleccionados.push(null as any);
+  this.serviciosSeleccionados.push({
+    id_tipo_mantenimiento: null,
+    costo: null
+  });
 
 }
 
@@ -149,8 +154,6 @@ cargarTalleres(): void {
 
     kilometraje: null,
 
-    costo_total: null,
-
     id_taller: null,
 
     id_vehiculo: null
@@ -168,11 +171,25 @@ cargarTalleres(): void {
 
  guardarOrdenMantenimiento(): void {
 
+  const serviciosValidos = this.serviciosSeleccionados.filter(
+    (s) => s.id_tipo_mantenimiento !== null && s.costo !== null && Number(s.costo) > 0
+  );
+
+  if (!this.nuevaOrden.fecha || !this.nuevaOrden.kilometraje || !this.nuevaOrden.id_taller) {
+    this.showToast('⚠️ Completa fecha, kilometraje y taller');
+    return;
+  }
+
+  if (serviciosValidos.length === 0) {
+    this.showToast('⚠️ Agrega al menos un servicio con costo válido');
+    return;
+  }
+
   const payload = {
 
     orden: this.nuevaOrden,
 
-    servicios: this.serviciosSeleccionados
+    servicios: serviciosValidos
 
   };
 
@@ -213,12 +230,25 @@ cargarTalleres(): void {
       next: (data) => {
         this.mantenimientos = data;
 
-       /* this.vehiculo.totalInvertido =
-          this.calcularTotalInvertido(this.vehiculo);*/
+        this.vehiculo.totalInvertido = this.calcularTotalInvertido();
 
       },
       error: (err) => console.error(err)
     });
+  }
+
+  calcularTotalInvertido(): number {
+    return this.mantenimientos.reduce(
+      (acc, m) => acc + (Number(m?.costo) || 0),
+      0
+    );
+  }
+
+  calcularCostoTotalServicios(): number {
+    return this.serviciosSeleccionados.reduce(
+      (acc, servicio) => acc + (Number(servicio?.costo) || 0),
+      0
+    );
   }
 
   /*
@@ -226,13 +256,11 @@ cargarTalleres(): void {
  *
  * Inyecta los servicios necesarios para:
  * - Gestionar vehículos.
- * - Gestionar RTM.
  * - Gestionar mantenimientos.
  * - Navegar entre vistas.
  */
   constructor(
     private vehiculosService: VehiculosService, 
-    private rtmService: RtmService, 
     private mantenimientosService: MantenimientosService, 
     private router: Router
   ) { }
@@ -248,13 +276,9 @@ cargarTalleres(): void {
     this.vehiculo = this.vehiculos.find(v => v.id === Number(id)) || null;
     console.log('Vehículo seleccionado:', this.vehiculo);
 
-    /*if (this.vehiculo) {
-      this.vehiculo.ecoScore =
-        this.calcularEcoScore(this.vehiculo);
-
+    if (this.vehiculo) {
       this.cargarMantenimientos();
-
-    }*/
+    }
   }
 
   //Método del ciclo de vida de Angular
@@ -262,18 +286,9 @@ cargarTalleres(): void {
 
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     this.nuevoVehiculo.id_usuario = usuario.id;
+    this.usuarioId = usuario.id || null;
 
-    //Consulta al backend los vehículos asociados al usuario autenticado
-    this.vehiculosService.getVehiculosPorUsuario(usuario.id).subscribe({
-      next: (data) => {
-
-        console.log('VEHICULOS RECIBIDOS:', data);
-
-        this.vehiculos = data;
-        this.vehiculo = null;
-      },
-      error: (err) => console.error(err)
-    });
+    this.cargarVehiculosUsuario();
 
     //Crea un IntersectionObserver (animación)
     const observer = new IntersectionObserver((entries) => {
@@ -289,6 +304,22 @@ cargarTalleres(): void {
     document.querySelectorAll('.feat-card, .ods-card, .kpi-card, .tl-item')
       .forEach(el => observer.observe(el));
 
+  }
+
+  cargarVehiculosUsuario(): void {
+    if (!this.usuarioId) return;
+
+    //Consulta al backend los vehículos asociados al usuario autenticado
+    this.vehiculosService.getVehiculosPorUsuario(this.usuarioId).subscribe({
+      next: (data) => {
+
+        console.log('VEHICULOS RECIBIDOS:', data);
+
+        this.vehiculos = data;
+        this.vehiculo = null;
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   //Función encargada de cambiar entre las diferentes pestañas o secciones del panel lateral
@@ -329,104 +360,23 @@ cargarTalleres(): void {
 
   //registrar un vehiculo
   registerVehicle(): void {
-    this.vehiculosService.registrarVehiculo(this.nuevoVehiculo).subscribe({
-      next: (res) => {
-        const hoy = new Date();
-        //const fechaVencimiento = new Date(this.nuevoVehiculo.fechaRtm);
-        //const estado = fechaVencimiento >= hoy ? 'vigente' : 'vencida';
+    if (!this.nuevoVehiculo.placa || !this.nuevoVehiculo.id_usuario) {
+      this.showToast('⚠️ Completa placa y sesión de usuario');
+      return;
+    }
 
-        const rtm = {
-         // fecha_vencimiento: this.nuevoVehiculo.fechaRtm,
-         // estado: estado,
-          id_vehiculo: res.id
-        };
-        this.rtmService.registrarRtm(rtm).subscribe({
-          next: () => {
-            this.closeModal();
-            this.showToast('🚗 Vehículo registrado exitosamente');
-          },
-          error: (err) => {
-            console.error('Error RTM:', err);
-            this.showToast('❌ Error al registrar la RTM');
-          }
-        });
+    this.vehiculosService.registrarVehiculo(this.nuevoVehiculo).subscribe({
+      next: () => {
+        this.closeModal();
+        this.showToast('🚗 Vehículo registrado exitosamente');
+        this.cargarVehiculosUsuario();
       },
       error: (err) => {
         console.error('Error:', err);
-        this.showToast('❌ Error al registrar el vehículo');
+        const msg = err?.error?.error || 'Error al registrar el vehículo';
+        this.showToast(`❌ ${msg}`);
       }
     });
-  }
-
-  /*calcularEcoScore(vehiculo: any): number {
-    let score = 100;
-    // kilometraje
-    if (vehiculo.kilometraje > 150000) {
-      score -= 40;
-    }
-    else if (vehiculo.kilometraje > 80000) {
-      score -= 25;
-    }
-    else if (vehiculo.kilometraje > 30000) {
-      score -= 10;
-    };*/
-
-    // combustible
-   /* switch (vehiculo.combustible.toLowerCase()) {
-
-      case 'diesel':
-        score -= 25;
-        break;
-
-      case 'gasolina':
-        score -= 15;
-        break;
-
-      case 'hibrido':
-        score -= 5;
-        break;
-    }
-
-    return score;
-  }
-
-  calcularTotalInvertido(vehiculo: any): number {
-
-    let total = 0;
-
-    this.mantenimientos.forEach((m: any) => {
-
-      if (m.id_vehiculo === vehiculo.id) {
-
-        total += Number(m.costo);
-
-      }
-
-    });
-
-    return total;
-  }*/
-
-
-  /*Gestiona el estado de los elementos de una lista de verificación relacionada con la RTM. Permite marcar y desmarcar ítems completados. Cuando todos los elementos han sido completados, muestra una notificación informativa.*/
-  toggleCheck(el: HTMLElement): void {
-    el.classList.toggle('checked');
-    const box = el.querySelector('.check-box') as HTMLElement;
-    box.textContent = el.classList.contains('checked') ? '✓' : '';
-    const done = document.querySelectorAll('#tab-rtm .check-item.checked').length;
-    const total = document.querySelectorAll('#tab-rtm .check-item').length;
-    if (done === total) this.showToast('✅ Todos los ítems de la RTM completados');
-  }
-
-  filterTaller(el: HTMLElement): void {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    this.showToast('🔍 Filtrando talleres por: ' + el.textContent?.trim());
-  }
-
-  //Realiza un desplazamiento suave hacia una sección específica de la página.
-  scrollToSection(id: string): void {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   }
 
   //Cierra la sesión del usuario actual

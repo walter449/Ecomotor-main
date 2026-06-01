@@ -13,7 +13,18 @@ router.get('/', (req, res) => {
 // GET mantenimientos por vehículo
 router.get('/:id_vehiculo', (req, res) => {
   db.query(
-    'SELECT * FROM mantenimientos WHERE id_vehiculo = ?',
+    `
+      SELECT
+        om.fecha,
+        om.kilometraje,
+        dm.costo,
+        tm.nombre AS tipo
+      FROM ordenes_mantenimiento om
+      INNER JOIN detalle_mantenimiento dm ON dm.id_orden = om.id
+      INNER JOIN tipos_mantenimiento tm ON tm.id = dm.id_tipo_mantenimiento
+      WHERE om.id_vehiculo = ?
+      ORDER BY om.fecha DESC, dm.id DESC
+    `,
     [req.params.id_vehiculo],
     (err, results) => {
       if (err) return res.status(500).json({ error: err.message });

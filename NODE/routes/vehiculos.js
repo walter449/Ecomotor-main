@@ -13,44 +13,72 @@ router.get('/', (req, res) => {
 // POST registrar vehículo
 router.post('/', (req, res) => {
   // Datos enviados desde angular
-  const { placa, marca, modelo, anio, kilometraje, id_usuario } = req.body;
+  const {
+    placa,
+    marca,
+    modelo,
+    anio,
+    kilometraje,
+    id_usuario
+  } = req.body;
+
+  if (!placa || !id_usuario) {
+    return res.status(400).json({
+      error: 'Placa e id_usuario son obligatorios'
+    });
+  }
+
+  const placaNormalizada = String(placa).trim().toUpperCase();
+  const marcaNormalizada = marca ? String(marca).trim() : null;
+  const modeloNormalizado = modelo ? String(modelo).trim() : null;
+  const anioNormalizado = anio ? Number(anio) : null;
+
   // Buscar la especificación correspondiente al vehículo
   // usando marca + modelo + año
   const queryEspecificacion = `
     SELECT id
     FROM especificaciones_vehiculos
-    WHERE marca = ?
-      AND modelo = ?
+    WHERE LOWER(TRIM(marca)) = LOWER(TRIM(?))
+      AND LOWER(TRIM(modelo)) = LOWER(TRIM(?))
       AND anio_modelo = ?
     LIMIT 1
   `;
 
   db.query(
     queryEspecificacion,
-    [marca, modelo, anio],
+    [marcaNormalizada, modeloNormalizado, anioNormalizado],
     (err, especificaciones) => {
 
       if (err) {
         return res.status(500).json({ error: err.message });
       }
 
-      // Si no encuentra coincidencia en la tabla
-      // especificaciones_vehiculos
-      if (especificaciones.length === 0) {
-        return res.status(404).json({
-          error: 'No se encontró una especificación para ese vehículo'
-        });
-      }
-
-      // Obtener el id de la especificación encontrada
-      const id_especificacion = especificaciones[0].id;
+      // Si no encuentra especificación, se guarda igual con id_especificacion en null.
+      const id_especificacion =
+        especificaciones.length > 0
+          ? especificaciones[0].id
+          : null;
 
       // Ahora también se guarda id_especificacion
       db.query(
         'INSERT INTO vehiculos (placa, marca, modelo, anio, kilometraje, id_usuario, id_especificacion) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [placa, marca, modelo, anio,  kilometraje, id_usuario, id_especificacion],
+        [
+          placaNormalizada,
+          marcaNormalizada,
+          modeloNormalizado,
+          anioNormalizado,
+          kilometraje,
+          id_usuario,
+          id_especificacion
+        ],
         (err, result) => {
           if (err) {
+             if (err.code === 'ER_DUP_ENTRY') {
+               return res.status(409).json({
+                 error: 'Ya existe un vehículo con esa placa'
+               });
+             }
+
              return res.status(500).json({ error: err.message });
           }
 
