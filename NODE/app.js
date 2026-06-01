@@ -12,6 +12,12 @@ var mantenimientosRouter = require('./routes/mantenimientos');
 var talleresRouter = require('./routes/talleres')
 var usuariosRouter = require('./routes/usuarios');
 
+var tiposMantenimientoRouter =
+require('./routes/tiposMantenimiento');
+var ordenesMantenimientoRouter =
+require('./routes/ordenesMantenimiento');
+
+
 var app = express();
 
 const cors = require('cors');
@@ -34,6 +40,10 @@ app.use('/rtm', rtmRouter);
 app.use('/mantenimientos', mantenimientosRouter);
 app.use('/talleres', talleresRouter);
 app.use('/usuarios', usuariosRouter);
+
+app.use( '/tipos-mantenimiento', tiposMantenimientoRouter);
+
+app.use('/ordenes-mantenimiento', ordenesMantenimientoRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

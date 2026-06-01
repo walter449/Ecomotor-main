@@ -221,7 +221,6 @@ cargarTalleres(): void {
     });
   }
 
-
   /*
  * Constructor del componente.
  *
