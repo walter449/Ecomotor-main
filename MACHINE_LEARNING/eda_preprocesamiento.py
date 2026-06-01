@@ -506,10 +506,10 @@ print(df.shape)
 
 #)
 
-df_codificado.to_csv(
-    'MACHINE_LEARNING/dataset/co2_codificado.csv',
-    index=False
-)
+#df_codificado.to_csv(
+ #   'MACHINE_LEARNING/dataset/co2_codificado.csv',
+ #   index=False
+#)
 
 print("\n==============================")
 print("CSV LIMPIO GUARDADO")
@@ -518,3 +518,10 @@ print("==============================")
 
 print("Archivo creado:")
 print("MACHINE_LEARNING/dataset/co2_limpio.csv")
+
+import joblib
+
+joblib.dump(
+    codificadores,
+    'MACHINE_LEARNING/modelos/codificadores.pkl'
+)

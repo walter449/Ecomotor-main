@@ -139,6 +139,25 @@ df['cluster'] = kmeans.fit_predict(
 
 print("\nModelo entrenado correctamente")
 
+# =========================================================
+# ASIGNAR NOMBRES A LOS CLUSTERS
+# =========================================================
+
+nombres_cluster = {
+
+    0: 'Eficientes',
+
+    1: 'Contaminacion Moderada',
+
+    2: 'Altamente Contaminantes',
+
+    3: 'Vehiculos de Alto Consumo'
+
+}
+
+df['nombre_cluster'] = df['cluster'].map(
+    nombres_cluster
+)
 
 # =========================================================
 # 8. VER CANTIDAD DE VEHÍCULOS POR CLUSTER
@@ -149,9 +168,8 @@ print("VEHÍCULOS POR CLUSTER")
 print("==========================")
 
 print(
-    df['cluster']
+    df['nombre_cluster']
     .value_counts()
-    .sort_index()
 )
 
 
@@ -164,7 +182,7 @@ print("CO2 PROMEDIO POR CLUSTER")
 print("==========================")
 
 print(
-    df.groupby('cluster')['co2_base']
+    df.groupby('nombre_cluster')['co2_base']
     .mean()
     .round(2)
 )
@@ -180,7 +198,7 @@ print("==========================")
 
 print(
 
-    df.groupby('cluster')[
+    df.groupby('nombre_cluster')[
         [
             'cilindraje_motor',
             'cilindros',
@@ -192,17 +210,93 @@ print(
 
 )
 
+print(
+    df.groupby('nombre_cluster')['clase_vehiculo']
+      .agg(lambda x: x.value_counts().index[0])
+)
+
+print(
+    df.groupby('nombre_cluster')['tipo_combustible']
+      .agg(lambda x: x.value_counts().index[0])
+)
 
 # =========================================================
-# 11. GUARDAR DATASET CON CLUSTERS
+# 11. CREAR DATASET LEGIBLE
+# =========================================================
+# Convierte nuevamente los códigos numéricos
+# a sus valores originales para poder analizar
+# los clusters fácilmente.
 # =========================================================
 
-df.to_csv(
-    'MACHINE_LEARNING/dataset/vehiculos_clusterizados.csv',
+try:
+
+    from joblib import load
+
+    codificadores = load(
+        'MACHINE_LEARNING/modelos/codificadores.pkl'
+    )
+
+    df_legible = df.copy()
+
+    df_legible['marca'] = (
+        codificadores['marca']
+        .inverse_transform(df_legible['marca'])
+    )
+
+    df_legible['clase_vehiculo'] = (
+        codificadores['clase_vehiculo']
+        .inverse_transform(df_legible['clase_vehiculo'])
+    )
+
+    df_legible['tipo_combustible'] = (
+        codificadores['tipo_combustible']
+        .inverse_transform(df_legible['tipo_combustible'])
+    )
+
+    df_legible['transmision'] = (
+        codificadores['transmision']
+        .inverse_transform(df_legible['transmision'])
+    )
+
+    print("\n==========================")
+    print("DATASET LEGIBLE CREADO")
+    print("==========================")
+
+except Exception as e:
+
+    print(
+        "\nNo se pudieron cargar los codificadores:"
+    )
+
+    print(e)
+
+    df_legible = df.copy()
+
+
+# =========================================================
+# 12. GUARDAR DATASET CLUSTERIZADO
+# =========================================================
+
+#df.to_csv(
+#    'MACHINE_LEARNING/dataset/vehiculos_clusterizados.csv',
+#    index=False
+#)
+
+print("\nCSV clusterizado guardado")
+
+
+# =========================================================
+# GUARDAR VERSIÓN LEGIBLE
+# =========================================================
+
+df_legible.to_csv(
+    'MACHINE_LEARNING/dataset/vehiculos_clusterizados_legible.csv',
     index=False
 )
 
-print("\nCSV clusterizado guardado")
+print(
+    "CSV clusterizado legible guardado"
+)
 
 
 # =========================================================
@@ -223,8 +317,7 @@ print("Modelo guardado")
 
 joblib.dump(
     scaler,
-    'MACHINE_LEARNING/modelos/scaler_kmeans.pkl'
-)
+    'MACHINE_LEARNING/modelos/scaler_kmeans.pkl')
 
 print("Scaler guardado")
 
@@ -244,3 +337,48 @@ print(
 )
 
 print("\nProceso finalizado")
+
+# =========================================================
+# PERFIL COMPLETO DE LOS CLUSTERS
+# =========================================================
+
+print("\n==========================")
+print("PERFIL DETALLADO")
+print("==========================")
+
+for nombre in df_legible['nombre_cluster'].unique():
+
+    print(f"\n######## {nombre} ########")
+
+    datos = df_legible[
+        df_legible['nombre_cluster'] == nombre
+    ]
+
+    print("\nMarcas más comunes:")
+    print(
+        datos['marca']
+        .value_counts()
+        .head(5)
+    )
+
+    print("\nClases más comunes:")
+    print(
+        datos['clase_vehiculo']
+        .value_counts()
+        .head(5)
+    )
+
+    print("\nCombustibles más comunes:")
+    print(
+        datos['tipo_combustible']
+        .value_counts()
+        .head(5)
+    )
+
+    print("\nPromedio CO2:")
+    print(
+        round(
+            datos['co2_base'].mean(),
+            2
+        )
+    )
