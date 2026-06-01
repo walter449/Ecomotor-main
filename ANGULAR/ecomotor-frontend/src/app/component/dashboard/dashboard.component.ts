@@ -35,50 +35,176 @@ export class DashboardComponent implements OnInit {
   //Almacena todos los mantenimientos asociados al vehículo seleccionado
   mantenimientos: any[] = [];
   //Modelo utilizado para almacenar la información ingresada en el formulario de registro de mantenimiento.
-  nuevoMantenimiento = {
-    tipo: '',
+  nuevaOrden = {
     fecha: '',
     kilometraje: null,
-    costo: null,
+    costo_total: null,
+    id_taller: null,
     id_vehiculo: null
   };
 
+  serviciosSeleccionados: number[] = [];
+
+  tiposMantenimiento: any[] = [];
+
+  talleres: any[] = [];
+
   /* Abre la ventana modal para registrar un mantenimiento. Antes de abrir el formulario verifica que exista un vehículo seleccionado. Si no existe, muestra una notificación de advertencia */
   openModalMantenimiento(): void {
-    if (!this.vehiculo) {
-      this.showToast('⚠️ Primero registra un vehículo');
-      return;
-    }
-    this.nuevoMantenimiento.id_vehiculo = this.vehiculo.id;
-    document.getElementById('modal-mantenimiento')?.classList.add('open');
-    document.body.style.overflow = 'hidden';
+
+  if (!this.vehiculo) {
+
+    this.showToast('⚠️ Primero selecciona un vehículo');
+
+    return;
+
   }
 
+  this.nuevaOrden.id_vehiculo = this.vehiculo.id;
+
+  this.serviciosSeleccionados = [];
+
+  this.agregarServicio();
+
+  this.cargarTiposMantenimiento();
+
+  this.cargarTalleres();
+
+  document
+    .getElementById('modal-mantenimiento')
+    ?.classList.add('open');
+
+  document.body.style.overflow = 'hidden';
+
+}
+
+agregarServicio(): void {
+
+  this.serviciosSeleccionados.push(null as any);
+
+}
+
+eliminarServicio(index: number): void {
+
+  this.serviciosSeleccionados.splice(index, 1);
+
+}
+
+cargarTiposMantenimiento(): void {
+
+  this.mantenimientosService
+    .getTiposMantenimiento()
+    .subscribe({
+
+      next: (data) => {
+
+        this.tiposMantenimiento = data;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
+
+cargarTalleres(): void {
+
+  this.mantenimientosService
+    .getTalleres()
+    .subscribe({
+
+      next: (data) => {
+
+        this.talleres = data;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
+
   /*Cierra la ventana modal de registro de mantenimiento y restablece el desplazamiento normal de la página*/
-  closeModalMantenimiento(): void {
-    document.getElementById('modal-mantenimiento')?.classList.remove('open');
-    document.body.style.overflow = '';
-  }
+ closeModalMantenimiento(): void {
+
+  document
+    .getElementById('modal-mantenimiento')
+    ?.classList.remove('open');
+
+  document.body.style.overflow = '';
+
+  this.nuevaOrden = {
+
+    fecha: '',
+
+    kilometraje: null,
+
+    costo_total: null,
+
+    id_taller: null,
+
+    id_vehiculo: null
+
+  };
+
+  this.serviciosSeleccionados = [];
+
+}
 
   /*Permite cerrar la ventana modal cuando el usuario hace clic fuera del contenido principal.*/
   closeModalMantenimientoOutside(e: Event): void {
     if (e.target === document.getElementById('modal-mantenimiento')) this.closeModalMantenimiento();
   }
 
-  /* Envía al servidor la información del mantenimiento ingresada por el usuario*/
-  registrarMantenimiento(): void {
-    this.mantenimientosService.registrarMantenimiento(this.nuevoMantenimiento).subscribe({
+ guardarOrdenMantenimiento(): void {
+
+  const payload = {
+
+    orden: this.nuevaOrden,
+
+    servicios: this.serviciosSeleccionados
+
+  };
+
+  this.mantenimientosService
+    .guardarOrden(payload)
+    .subscribe({
+
       next: () => {
+
         this.closeModalMantenimiento();
-        this.showToast('🔧 Mantenimiento registrado');
+
+        this.showToast(
+          '✅ Mantenimiento registrado'
+        );
+
         this.cargarMantenimientos();
+
       },
+
       error: (err) => {
+
         console.error(err);
-        this.showToast('❌ Error al registrar mantenimiento');
+
+        this.showToast(
+          '❌ Error al registrar'
+        );
+
       }
+
     });
-  }
+
+}
 
   /* Consulta todos los mantenimientos asociados al vehículo seleccionado y los almacena para su visualización en la interfaz*/
   cargarMantenimientos(): void {

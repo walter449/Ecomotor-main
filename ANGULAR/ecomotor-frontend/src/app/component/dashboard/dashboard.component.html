@@ -578,42 +578,127 @@
   </div>
 
   <!-- MODAL: REGISTRAR MANTENIMIENTO -->
-  <div class="modal-overlay" id="modal-mantenimiento" (click)="closeModalMantenimientoOutside($event)">
-    <div class="modal">
-      <button class="modal-close" (click)="closeModalMantenimiento()">✕</button>
-      <h3>🔧 Registrar Mantenimiento</h3>
-      <p>Registra un servicio realizado a tu vehículo.</p>
-      <div class="form-row">
-        <label>Tipo de mantenimiento</label>
-        <select [(ngModel)]="nuevoMantenimiento.tipo">
-          <option>Cambio de Aceite</option>
-          <option>Filtro de Aire</option>
-          <option>Revisión de frenos</option>
-          <option>Cambio Pastillas de Freno</option>
-          <option>Revisión de Batería</option>
-          <option>Cambio de Bujías</option>
-          <option>Alineación y Balanceo</option>
-          <option>Revisión de Sistema de Escape</option>
-          <option>Cambio Filtro combustible</option>
-          <option>Revisión General</option>
-        </select>
-      </div>
-      <div class="form-grid">
-        <div class="form-row">
-          <label>Fecha</label>
-          <input type="date" [(ngModel)]="nuevoMantenimiento.fecha">
-        </div>
-        <div class="form-row">
-          <label>Kilometraje</label>
-          <input type="number" [(ngModel)]="nuevoMantenimiento.kilometraje" placeholder="45.000">
-        </div>
-      </div>
-      <div class="form-row">
-        <label>Costo (COP)</label>
-        <input type="number" [(ngModel)]="nuevoMantenimiento.costo" placeholder="85.000">
-      </div>
-      <button class="btn-primary" (click)="registrarMantenimiento()">Guardar →</button>
-    </div>
-  </div>
+<div
+  class="modal-overlay"
+  id="modal-mantenimiento"
+  (click)="closeModalMantenimientoOutside($event)"
+>
+  <div class="modal">
 
+    <button
+      class="modal-close"
+      (click)="closeModalMantenimiento()"
+    >
+      ✕
+    </button>
+
+    <h3>🔧 Registrar Mantenimiento</h3>
+    <p>Registra una visita al taller.</p>
+
+    <!-- FECHA -->
+    <div class="form-row">
+      <label>Fecha</label>
+      <input
+        type="date"
+        [(ngModel)]="nuevaOrden.fecha"
+      >
+    </div>
+
+    <!-- KILOMETRAJE -->
+    <div class="form-row">
+      <label>Kilometraje actual</label>
+      <input
+        type="number"
+        [(ngModel)]="nuevaOrden.kilometraje"
+        placeholder="45000"
+      >
+    </div>
+
+    <!-- COSTO TOTAL -->
+    <div class="form-row">
+      <label>Costo total (COP)</label>
+      <input
+        type="number"
+        [(ngModel)]="nuevaOrden.costo_total"
+        placeholder="150000"
+      >
+    </div>
+
+    <!-- TALLER -->
+    <div class="form-row">
+      <label>Taller</label>
+
+      <select [(ngModel)]="nuevaOrden.id_taller">
+
+        <option [ngValue]="null">
+          Seleccionar taller
+        </option>
+
+        <option
+          *ngFor="let taller of talleres"
+          [ngValue]="taller.id"
+        >
+          {{ taller.nombre }}
+        </option>
+
+      </select>
+    </div>
+
+    <!-- SERVICIOS -->
+    <div class="form-row">
+
+      <label>
+        Servicios realizados
+      </label>
+
+      <div
+        class="servicio-item"
+        *ngFor="
+          let servicio of serviciosSeleccionados;
+          let i = index
+        "
+      >
+
+        <select
+          [(ngModel)]="serviciosSeleccionados[i]"
+        >
+
+          <option
+            *ngFor="let tipo of tiposMantenimiento"
+            [value]="tipo.id"
+          >
+            {{ tipo.nombre }}
+          </option>
+
+        </select>
+
+        <button
+          type="button"
+          class="btn-remove"
+          (click)="eliminarServicio(i)"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="agregarServicio()"
+      >
+        + Agregar otro servicio
+      </button>
+
+    </div>
+
+    <button
+      class="btn-primary"
+      (click)="guardarOrdenMantenimiento()"
+    >
+      Guardar →
+    </button>
+
+  </div>
+</div>
 

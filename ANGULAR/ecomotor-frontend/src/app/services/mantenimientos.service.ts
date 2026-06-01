@@ -7,15 +7,50 @@ import { Observable } from 'rxjs';
 })
 export class MantenimientosService {
 
-  private apiUrl = 'http://localhost:3000/mantenimientos';
+  private apiUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {}
 
-  getMantenimientosPorVehiculo(id_vehiculo: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${id_vehiculo}`);
+  getMantenimientosPorVehiculo(
+    idVehiculo: number
+  ): Observable<any[]> {
+
+    return this.http.get<any[]>(
+      `${this.apiUrl}/mantenimientos/${idVehiculo}`
+    );
   }
 
-  registrarMantenimiento(mantenimiento: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, mantenimiento);
+  registrarMantenimiento(
+    mantenimiento: any
+  ): Observable<any> {
+
+    return this.http.post(
+      `${this.apiUrl}/mantenimientos`,
+      mantenimiento
+    );
+  }
+
+  getTiposMantenimiento(): Observable<any[]> {
+
+    return this.http.get<any[]>(
+      `${this.apiUrl}/tipos-mantenimiento`
+    );
+  }
+
+  getTalleres(): Observable<any[]> {
+
+    return this.http.get<any[]>(
+      `${this.apiUrl}/talleres`
+    );
+  }
+
+  guardarOrden(
+    payload: any
+  ): Observable<any> {
+
+    return this.http.post(
+      `${this.apiUrl}/ordenes-mantenimiento`,
+      payload
+    );
   }
 }
