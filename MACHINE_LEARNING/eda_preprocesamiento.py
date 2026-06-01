@@ -498,16 +498,22 @@ print(df.shape)
 # Crea un nuevo archivo limpio listo para ML.
 # =========================================================
 
-df.to_csv(
+#df.to_csv(
 
-    'MACHINE_LEARNING/dataset/co2_limpio.csv',
+ #   'MACHINE_LEARNING/dataset/co2_limpio.csv',
 
+ #   index=False
+
+#)
+
+df_codificado.to_csv(
+    'MACHINE_LEARNING/dataset/co2_codificado.csv',
     index=False
-
 )
 
 print("\n==============================")
 print("CSV LIMPIO GUARDADO")
+print("CSV CODIFICADO GUARDADO")
 print("==============================")
 
 print("Archivo creado:")
