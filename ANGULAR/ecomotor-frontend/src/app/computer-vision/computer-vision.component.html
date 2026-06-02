@@ -4,7 +4,7 @@
     <h1>Detección de humo con una interfaz lista para conectar a tu modelo.</h1>
     <p>
       Esta pantalla queda preparada para la primera imagen de referencia y para la carga de fotos del usuario.
-      Más adelante solo tendrás que conectar el `test_model.py` desde el backend y dejar que el frontend pinte el resultado.
+      El frontend ya publica la imagen al backend FastAPI y espera la evidencia generada por el modelo.
     </p>
   </div>
 
@@ -38,6 +38,10 @@
           <span class="cv-status" [class.busy]="isAnalyzing">{{ isAnalyzing ? 'Analizando...' : 'Listo' }}</span>
         </div>
 
+        <div class="cv-file-hint">
+          Imagen recomendada: <strong>MACHINE_LEARNING/cnn-vision-service/test.jpg</strong>
+        </div>
+
         <div class="cv-preview-frame">
           <img class="cv-preview-image" [src]="activePreviewImage" alt="Vista previa para análisis de humo" />
           <div class="cv-preview-overlay">
@@ -62,6 +66,7 @@
         </div>
 
         <p class="cv-support">{{ activeSupportText }}</p>
+        <p class="cv-error" *ngIf="errorMessage">{{ errorMessage }}</p>
       </div>
 
       <div class="cv-panel">
@@ -77,7 +82,7 @@
             </div>
             <div class="cv-stat">
               <span class="cv-stat-label">Estado</span>
-              <strong>Humo detectado</strong>
+              <strong>{{ analysisSummary.vehicleStatus }}</strong>
             </div>
           </div>
 
@@ -119,7 +124,7 @@
 
     <div class="cv-modal-body">
       <div class="cv-modal-image-wrap">
-        <img class="cv-modal-image" [src]="activePreviewImage" alt="Imagen analizada con humo detectado" />
+        <img class="cv-modal-image" [src]="analyzedImagePreview" alt="Imagen analizada con humo detectado" />
         <div class="cv-detection-box box-one"></div>
         <div class="cv-detection-box box-two"></div>
         <div class="cv-detection-box box-three"></div>
