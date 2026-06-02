@@ -1,0 +1,148 @@
+<section class="cv-shell">
+  <div class="cv-hero">
+    <div class="cv-badge">CNN Vision Service</div>
+    <h1>Detección de humo con una interfaz lista para conectar a tu modelo.</h1>
+    <p>
+      Esta pantalla queda preparada para la primera imagen de referencia y para la carga de fotos del usuario.
+      Más adelante solo tendrás que conectar el `test_model.py` desde el backend y dejar que el frontend pinte el resultado.
+    </p>
+  </div>
+
+  <div class="cv-card">
+    <div class="cv-tabs" role="tablist" aria-label="Visión por computadora">
+      <button
+        type="button"
+        class="cv-tab"
+        [class.active]="activeTab === 'modelo-base'"
+        (click)="switchTab('modelo-base')"
+      >
+        1. Imagen principal
+      </button>
+      <button
+        type="button"
+        class="cv-tab"
+        [class.active]="activeTab === 'foto-usuario'"
+        (click)="switchTab('foto-usuario')"
+      >
+        2. Subir mi foto
+      </button>
+    </div>
+
+    <div class="cv-grid">
+      <div class="cv-stage">
+        <div class="cv-stage-head">
+          <div>
+            <div class="cv-kicker">Vista previa</div>
+            <h2>{{ activePreviewLabel }}</h2>
+          </div>
+          <span class="cv-status" [class.busy]="isAnalyzing">{{ isAnalyzing ? 'Analizando...' : 'Listo' }}</span>
+        </div>
+
+        <div class="cv-preview-frame">
+          <img class="cv-preview-image" [src]="activePreviewImage" alt="Vista previa para análisis de humo" />
+          <div class="cv-preview-overlay">
+            <div class="cv-preview-chip">Smoke detection</div>
+            <div class="cv-preview-note">El resultado se mostrará con la zona de humo resaltada en el modal.</div>
+          </div>
+        </div>
+
+        <div class="cv-actions">
+          <label class="cv-upload-btn">
+            Cambiar imagen
+            <input
+              type="file"
+              accept="image/*"
+              (change)="activeTab === 'modelo-base' ? onReferenceImageSelected($event) : onUserImageSelected($event)"
+            />
+          </label>
+
+          <button type="button" class="cv-primary-btn" (click)="activeTab === 'modelo-base' ? analyzeReferenceImage() : analyzeUserImage()" [disabled]="isAnalyzing">
+            {{ isAnalyzing ? 'Procesando...' : activeActionLabel }}
+          </button>
+        </div>
+
+        <p class="cv-support">{{ activeSupportText }}</p>
+      </div>
+
+      <div class="cv-panel">
+        <div class="cv-panel-card">
+          <div class="cv-kicker">Salida esperada</div>
+          <h3>{{ analysisSummary.title }}</h3>
+          <p>{{ analysisSummary.description }}</p>
+
+          <div class="cv-stat-grid">
+            <div class="cv-stat">
+              <span class="cv-stat-label">Detecciones</span>
+              <strong>{{ analysisSummary.detections }}</strong>
+            </div>
+            <div class="cv-stat">
+              <span class="cv-stat-label">Estado</span>
+              <strong>Humo detectado</strong>
+            </div>
+          </div>
+
+          <div class="cv-path-block">
+            <span class="cv-stat-label">Ruta de guardado</span>
+            <code>{{ analysisSummary.savedPath }}</code>
+          </div>
+        </div>
+
+        <div class="cv-panel-card">
+          <div class="cv-kicker">Confianzas</div>
+          <div class="cv-confidence-list" *ngIf="analysisSummary.confidences.length > 0; else emptyConfidences">
+            <div class="cv-confidence-row" *ngFor="let confidence of analysisSummary.confidences; let index = index">
+              <span>Detección {{ index + 1 }}</span>
+              <strong>{{ confidence | number:'1.3-3' }}</strong>
+            </div>
+          </div>
+
+          <ng-template #emptyConfidences>
+            <p class="cv-empty-state">Cuando ejecutes el modelo aparecerán aquí las confianzas de cada detección.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cv-modal-backdrop" [class.open]="isModalOpen" (click)="closeModal()">
+  <div class="cv-modal" (click)="$event.stopPropagation()">
+    <button type="button" class="cv-modal-close" (click)="closeModal()">×</button>
+
+    <div class="cv-modal-head">
+      <div>
+        <div class="cv-kicker">Resultado del modelo</div>
+        <h3>{{ analysisSummary.title }}</h3>
+      </div>
+      <span class="cv-status success">Completado</span>
+    </div>
+
+    <div class="cv-modal-body">
+      <div class="cv-modal-image-wrap">
+        <img class="cv-modal-image" [src]="activePreviewImage" alt="Imagen analizada con humo detectado" />
+        <div class="cv-detection-box box-one"></div>
+        <div class="cv-detection-box box-two"></div>
+        <div class="cv-detection-box box-three"></div>
+      </div>
+
+      <div class="cv-modal-details">
+        <p>
+          Aquí se mostrará la imagen ya procesada por el backend y las detecciones que llegue a producir `test_model.py`.
+          La maqueta ya deja listo el modal para ver el humo resaltado.
+        </p>
+
+        <div class="cv-modal-list">
+          <div *ngFor="let confidence of analysisSummary.confidences; let index = index" class="cv-modal-item">
+            <span>Confianza {{ index + 1 }}</span>
+            <strong>{{ confidence | number:'1.3-3' }}</strong>
+          </div>
+        </div>
+
+        <div class="cv-modal-path">
+          <span class="cv-stat-label">Resultados guardados en</span>
+          <code>{{ analysisSummary.savedPath }}</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -45,5 +45,10 @@ export class LandingComponent {
     }
   }
 
+  //Funcion que lleva al demo de CNN
+  goToDemo(): void {
+    this.router.navigate(['/computerVision'])
+  }
+
 
 }
